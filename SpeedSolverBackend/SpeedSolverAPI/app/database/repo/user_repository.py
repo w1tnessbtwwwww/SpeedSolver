@@ -15,7 +15,7 @@ class UserRepository(AbstractRepository):
         if not user:
             return err("User not found")
         if not verify_password(password, user.password):
-            return err(error="Invalid password")
+            return err("Invalid password")
         return success(user)
     
     async def delete_by_id(self, id):

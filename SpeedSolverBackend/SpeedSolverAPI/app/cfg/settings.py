@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_LIFETIME_MINUTES: int
     JWT_REFRESH_TOKEN_LIFETIME_HOURS: int
     JWT_ALGORITHM: str
+
+    MAIL_EMAIL: str
+    MAIL_PASSWORD: str
     
     class Config:
         env_file = ".env"

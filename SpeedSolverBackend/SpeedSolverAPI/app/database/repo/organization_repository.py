@@ -25,7 +25,7 @@ class OrganizationRepository(AbstractRepository):
             result = self._session.execute(query)
             organization = result.scalars().first()
             if organization:
-                return err(error="Organization already exists")
+                return err("Organization already exists")
             return success(value=await self.create(**kwargs))
         except Exception as e:
             return err(str(e))

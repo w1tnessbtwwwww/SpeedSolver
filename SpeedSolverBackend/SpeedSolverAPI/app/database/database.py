@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.engine import create_engine, Engine
+
 from ..cfg.settings import settings
 
 def get_engine() -> Engine:
