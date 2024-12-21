@@ -2,24 +2,20 @@
 name = "speedsolverapi"
 version = "0.1.0"
 description = ""
-authors = ["xxxw1tnessbtwxxx <work.w1tnessbtw@mail.ru>"]
-license = "Apache License 2.0"
+authors = ["w1tnessbtwwwww <work.w1tnessbtw@mail.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
-uvicorn = "^0.32.1"
-alembic = "^1.14.0"
+python = "^3.13"
 fastapi = "^0.115.6"
-sqlalchemy = "^2.0.36"
-psycopg2-binary = "^2.9.10"
-pydantic = "^2.10.3"
-pydantic-settings = "^2.6.1"
-pyjwt = "^2.10.1"
-bcrypt = "^4.2.1"
-python-multipart = "^0.0.19"
+uvicorn = "^0.34.0"
 yarl = "^1.18.3"
-starlette = "^0.41.3"
+pydantic = "^2.10.4"
+pydantic-settings = "^2.7.0"
+sqlalchemy = "^2.0.36"
+alembic = "^1.14.0"
+asyncpg = "^0.30.0"
+greenlet = "^3.1.1"
 
 
 [build-system]
