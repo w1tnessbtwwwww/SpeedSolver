@@ -1,4 +1,3 @@
-from pydantic import Field
 from pydantic_settings import BaseSettings
 from yarl import URL
 class Settings(BaseSettings):
