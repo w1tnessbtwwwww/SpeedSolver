@@ -80,21 +80,35 @@ class UserProfile(Base):
 
     user: Mapped["User"] = relationship("User", back_populates="profile") # type: ignore
 
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+
+    verification_id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), unique=True)
+
+    verification_code: Mapped[str] = mapped_column()
+
+    user: Mapped["User"] = relationship("User", back_populates="verification")
+    
+
 class User(Base):
     __tablename__ = "users"
     userId: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(nullable=True, unique=True)
     password: Mapped[str] = mapped_column()
-    registered: Mapped[Date] = mapped_column(Date, default=datetime.date.today(), nullable=True)
+    registered: Mapped[Date] = mapped_column(Date, default=datetime.date.today(), nullable=True) 
+    is_mail_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
+
 
     profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user", cascade="all, delete-orphan") # type: ignore
+
     teams: Mapped[List["TeamMember"]] = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan") # type: ignore
     teams_lead: Mapped[List["Team"]] = relationship("Team", back_populates="leader")
 
     team_invitations: Mapped[List["TeamInvitation"]] = relationship("TeamInvitation", back_populates="invited_user", foreign_keys="[TeamInvitation.invited_user_id]", cascade="all, delete-orphan")
-
     organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader")
     
+    verification: Mapped["EmailVerification"] = relationship("Verification", back_populates="user")
 
 class TeamInvitation(Base):
     __tablename__ = "team_invitations"

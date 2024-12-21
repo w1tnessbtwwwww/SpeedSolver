@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     @property
     def db_url(self) -> URL:
         url = URL.build (
-            scheme="postgresql+psycopg2",
+            scheme="postgresql+asyncpg",
             host=self.POSTGRES_HOST,
             port=self.POSTGRES_PORT,
             user=self.POSTGRES_USER,
