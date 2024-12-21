@@ -28,7 +28,7 @@ class TeamRepository(AbstractRepository):
         team = result.scalars().first()
 
         if team:
-            return err(error="Team already exists")
+            return err("Team already exists")
         
 
         return success(value = await self.create(title=title, description=description, leaderId=leaderId, organizationId=organizationId))
@@ -59,7 +59,7 @@ class TeamRepository(AbstractRepository):
             await self.commit()
             logger.info(f"Team {teamId} has updated by {leaderId}")
         except Exception as e:
-            return err(error=str(e))
+            return err(str(e))
         return success(value={
             "msg": "success"
         })

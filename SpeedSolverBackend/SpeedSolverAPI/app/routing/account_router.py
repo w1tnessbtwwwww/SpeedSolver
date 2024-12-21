@@ -2,9 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.routing.security.jwtmanager import oauth2_scheme
+
 from app.services.user_profile_service import UserProfileService
 from app.services.user_service import UserService
+
 from app.database.database import get_session
+
 from app.schema.request.account.updateprofile import UpdateProfile
 
 account_router = APIRouter(
