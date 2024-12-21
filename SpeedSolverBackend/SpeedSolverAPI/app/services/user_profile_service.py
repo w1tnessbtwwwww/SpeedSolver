@@ -12,8 +12,6 @@ from app.routing.security.hasher import hash_password, verify_password
 from app.routing.security.jwtmanager import JWTManager
 
 from app.utils.result import Result, err, success
-from app.utils.logger.logger import logger, log_info_with_separator
-
 
 class UserProfileService:
     

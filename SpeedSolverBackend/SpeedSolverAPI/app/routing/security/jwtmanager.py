@@ -13,7 +13,6 @@ from app.database.repo.user_repository import UserRepository
 from app.database.database import get_session
 
 from app.utils.result import Result, err, success
-from app.utils.logger.logger import logger
 
 from app.routing.security.hasher import verify_password
 from app.routing.security.jwttype import JWTType

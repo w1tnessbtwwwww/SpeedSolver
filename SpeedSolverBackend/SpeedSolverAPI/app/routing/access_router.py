@@ -14,7 +14,6 @@ from app.services.user_service import UserService
 
 
 from app.utils.result import Result
-from app.utils.logger.logger import logger
 
 from app.routing.security.jwttype import JWTType
 from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
@@ -31,7 +30,6 @@ async def register(registerRequest: RegisterRequest, session: Session = Depends(
     if not registered.success:
         raise HTTPException(status_code=400, detail=registered.error)
     
-    logger.info(f"User {registered.value.email} registered")
     return {
         "register": "User registered successfully"        
     }
