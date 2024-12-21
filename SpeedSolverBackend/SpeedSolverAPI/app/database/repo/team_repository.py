@@ -1,7 +1,6 @@
 from app.database.abstract.abc_repo import AbstractRepository
 from app.database.models.models import Team
 from sqlalchemy import select, update, delete, insert, and_, or_
-from app.utils.logger.logger import logger
 from app.utils.result import Result, err, success
 class TeamRepository(AbstractRepository):
     model: Team = Team
@@ -57,7 +56,6 @@ class TeamRepository(AbstractRepository):
         try:
             result = self._session.execute(query)
             await self.commit()
-            logger.info(f"Team {teamId} has updated by {leaderId}")
         except Exception as e:
             return err(str(e))
         return success(value={

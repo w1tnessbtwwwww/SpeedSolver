@@ -10,7 +10,6 @@ from app.schema.request.account.updateprofile import UpdateProfile
 from app.schema.response.AccessToken import AccessToken
 
 from app.utils.result import Result, err, success
-from app.utils.logger.logger import logger, log_info_with_separator
 
 from app.routing.security.hasher import hash_password, verify_password
 
@@ -36,7 +35,6 @@ class UserService:
         except IntegrityError:
             return err("User already exists")
         except Exception as e: 
-            log_info_with_separator(str(e))
             return success("Some error while attemping resource.")
         
     async def authorize(self, email: str, password: str) -> Result[AccessToken]:
