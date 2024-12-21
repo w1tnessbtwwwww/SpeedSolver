@@ -1,15 +1,17 @@
 
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
+
 from app.database.models.models import User
 from app.database.repo.user_profile_repository import UserProfileRepository
-from sqlalchemy.orm import Session
+
 from app.schema.request.get_access import authorize, register
 from app.schema.request.account.updateprofile import UpdateProfile
-from app.utils.result import Result, err, success
+
 from app.routing.security.hasher import hash_password, verify_password
 from app.routing.security.jwtmanager import JWTManager
-from app.utils.logger.logger import logger, log_info_with_separator
 
+from app.utils.result import Result, err, success
 
 class UserProfileService:
     

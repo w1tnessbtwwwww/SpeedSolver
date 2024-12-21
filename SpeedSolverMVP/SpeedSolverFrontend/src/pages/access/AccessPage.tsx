@@ -5,8 +5,7 @@ import PrimaryButton from "../../components/primaryButton/PrimaryButton"
 
 import styles from "./AccessPage.module.css"
 import AuthorizationType from "../../types/enums/AuthorizationType"
-import Swal from "sweetalert2"
-import { ToastContainer } from "react-toastify"
+
 
 interface AuthTypeProp {
     action: AuthorizationType
@@ -19,28 +18,11 @@ const AccessPage: React.FC<AuthTypeProp> = ({ action }) => {
 
     async function Register() {
         
-        Swal.fire(
-            {
-                title: 'Регистрация',
-                text: 'Регистрация находится в разработке.',
-                confirmButtonText: 'Понятно',
-                showConfirmButton: true,
-                confirmButtonColor: '#B4CBDB'
-            }
-        )
     }
 
     async function Authorize() {
 
-        Swal.fire(
-            {
-                title: 'Авторизация',
-                text: 'Авторизация находится в разработке.',
-                confirmButtonText: 'Понятно',
-                showConfirmButton: true,
-                confirmButtonColor: '#B4CBDB'
-            }
-        )
+        
     }
 
 
@@ -68,7 +50,6 @@ const AccessPage: React.FC<AuthTypeProp> = ({ action }) => {
 
                 </div>
             </div>
-            <ToastContainer/>
         </>
     )
 }

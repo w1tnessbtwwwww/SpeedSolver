@@ -4,19 +4,21 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.database.models.models import User
 from app.database.repo.user_repository import UserRepository
-from app.routing.security.jwttype import JWTType
-from app.schema.response.AccessToken import AccessToken
-from app.services.user_service import UserService
-
-from app.schema.request.get_access.register import RegisterRequest
-
-from app.utils.result import Result
-from app.utils.logger.logger import logger
 from app.database.database import get_session
 
+from app.schema.response.AccessToken import AccessToken
+from app.schema.request.get_access.register import RegisterRequest
 
 
+from app.services.user_service import UserService
+
+
+from app.utils.result import Result
+
+from app.routing.security.jwttype import JWTType
 from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
+
+
 
 from sqlalchemy.orm import Session
 
@@ -28,7 +30,6 @@ async def register(registerRequest: RegisterRequest, session: Session = Depends(
     if not registered.success:
         raise HTTPException(status_code=400, detail=registered.error)
     
-    logger.info(f"User {registered.value.email} registered")
     return {
         "register": "User registered successfully"        
     }

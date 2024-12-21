@@ -1,4 +1,3 @@
-from pydantic import Field
 from pydantic_settings import BaseSettings
 from yarl import URL
 class Settings(BaseSettings):
@@ -14,6 +13,9 @@ class Settings(BaseSettings):
     JWT_ACCESS_TOKEN_LIFETIME_MINUTES: int
     JWT_REFRESH_TOKEN_LIFETIME_HOURS: int
     JWT_ALGORITHM: str
+
+    MAIL_EMAIL: str
+    MAIL_PASSWORD: str
     
     class Config:
         env_file = ".env"
@@ -21,7 +23,7 @@ class Settings(BaseSettings):
     @property
     def db_url(self) -> URL:
         url = URL.build (
-            scheme="postgresql+psycopg2",
+            scheme="postgresql+asyncpg",
             host=self.POSTGRES_HOST,
             port=self.POSTGRES_PORT,
             user=self.POSTGRES_USER,
