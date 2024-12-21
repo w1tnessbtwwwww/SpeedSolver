@@ -12,3 +12,5 @@ SpeedSolverAPI/docker/docker-compose-dev.yml
 *.pyo
 *.pyd
 *.log
+
+nohup.out
