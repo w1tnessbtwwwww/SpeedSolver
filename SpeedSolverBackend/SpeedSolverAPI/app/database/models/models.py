@@ -108,7 +108,7 @@ class User(Base):
     team_invitations: Mapped[List["TeamInvitation"]] = relationship("TeamInvitation", back_populates="invited_user", foreign_keys="[TeamInvitation.invited_user_id]", cascade="all, delete-orphan")
     organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader")
     
-    verification: Mapped["EmailVerification"] = relationship("Verification", back_populates="user")
+    verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
 
 class TeamInvitation(Base):
     __tablename__ = "team_invitations"
