@@ -23,7 +23,7 @@ class TeamRepository(AbstractRepository):
             )
         )
 
-        result = self._session.execute(query)
+        result = await self._session.execute(query)
         team = result.scalars().first()
 
         if team:
@@ -54,7 +54,7 @@ class TeamRepository(AbstractRepository):
             )
         )
         try:
-            result = self._session.execute(query)
+            result = await self._session.execute(query)
             await self.commit()
         except Exception as e:
             return err(str(e))

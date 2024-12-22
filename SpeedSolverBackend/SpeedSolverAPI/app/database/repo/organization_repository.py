@@ -22,7 +22,7 @@ class OrganizationRepository(AbstractRepository):
                     self.model.title == kwargs['title']
                 ))
             )
-            result = self._session.execute(query)
+            result = await self._session.execute(query)
             organization = result.scalars().first()
             if organization:
                 return err("Organization already exists")

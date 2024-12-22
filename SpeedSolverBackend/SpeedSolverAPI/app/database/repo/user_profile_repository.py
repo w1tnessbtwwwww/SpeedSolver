@@ -13,7 +13,7 @@ class UserProfileRepository(AbstractRepository):
 
     async def update(self, userId: str, **kwargs):
         query = update(self.model).where(self.model.userId == userId).values(**kwargs).returning(self.model)
-        result = self._session.execute(query)
+        result = await self._session.execute(query)
         await self._session.commit()
         return result.scalars().first()
 
@@ -30,7 +30,7 @@ class UserProfileRepository(AbstractRepository):
             .where(self.model.userId == userId)
         )
 
-        result = self._session.execute(query)
+        result = await self._session.execute(query)
         profile = result.scalars().one_or_none()
         if not profile:
             creating = await self.create(userId=userId, surname=surname, name=name, patronymic=patronymic, birthdate=birthdate)  
