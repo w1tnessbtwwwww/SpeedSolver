@@ -1,11 +1,11 @@
 from abc import ABC
 
 from sqlalchemy import select, delete, update, insert
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 class AbstractRepository(ABC):
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
 
     model = None
@@ -49,5 +49,5 @@ class AbstractRepository(ABC):
 
     async def get_by_filter_one(self, **kwargs):
         query = select(self.model).filter_by(**kwargs)
-        result = self._session.execute(query)
+        result = await self._session.execute(query)
         return result.scalars().one_or_none()
