@@ -1,6 +1,6 @@
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
 from app.database.repo.user_profile_repository import UserProfileRepository
@@ -15,7 +15,7 @@ from app.utils.result import Result, err, success
 
 class UserProfileService:
     
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
         self._repo: UserProfileRepository = UserProfileRepository(session)
 

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from app.database.database import get_session
@@ -13,7 +13,7 @@ team_router = APIRouter(prefix="/team", tags=["Teams management"])
 
 
 @team_router.post("/create", summary="Создать команду")
-async def create_team(createRequest: CreateTeam, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+async def create_team(createRequest: CreateTeam, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
     created = await TeamService(session).create_team(createRequest, token)
 
     if not created.success:
@@ -25,7 +25,7 @@ async def create_team(createRequest: CreateTeam, token: str = Depends(oauth2_sch
     return created.value
 
 @team_router.post("/update", summary="Обновить команду")
-async def update_team(updateRequest: UpdateTeam, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+async def update_team(updateRequest: UpdateTeam, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
     updated = await TeamService(session).update_team(updateRequest, token)
 
     if not updated.success:

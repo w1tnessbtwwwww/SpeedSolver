@@ -1,5 +1,5 @@
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
 from app.database.repo.team_repository import TeamRepository
@@ -10,7 +10,7 @@ from app.schema.request.team.create_team import CreateTeam
 from app.schema.request.team.update_team import UpdateTeam
 
 class TeamService:
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
         self._repo = TeamRepository(session)
 

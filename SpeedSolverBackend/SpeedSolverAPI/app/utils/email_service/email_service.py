@@ -7,7 +7,7 @@ from app.utils.result import Result, err, success
 class EmailService:
 
     @staticmethod
-    def send_verify_code(subject: str, send_to: str, code: int):
+    async def send_verify_code(subject: str, send_to: str, code: int):
         smtp_server = 'smtp.mail.ru'
         smtp_port = 587
         smtp_username = settings.MAIL_EMAIL
@@ -24,7 +24,7 @@ class EmailService:
         msg['Subject'] = subject
 
         # Текст сообщения
-        msg.attach(MIMEText(str(code), 'plain'))
+        msg.attach(MIMEText(f"Здравствуйте!\nВаш код подтверждения для регистрации в сервисе SpeedSolver: {code}"))
 
         # Отправка сообщения
         try:

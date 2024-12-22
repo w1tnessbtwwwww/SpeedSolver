@@ -1,6 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 
 from app.cfg.settings import settings
+from app.exc.bad_email import BadEmail
 from app.routing.main_router import main_router
 from app.utils.email_service.email_service import EmailService
 
@@ -15,6 +17,8 @@ api = FastAPI(
     version="v1",
 )
 
+
+
 api.add_middleware (
     CORSMiddleware,
     allow_origins=[
@@ -28,4 +32,11 @@ api.add_middleware (
 
 api.include_router(main_router)
 
+
+@api.exception_handler(BadEmail)
+async def bad_email(request, exc: BadEmail):
+    raise HTTPException(
+        status_code=422,
+        detail=exc.message
+    )
 

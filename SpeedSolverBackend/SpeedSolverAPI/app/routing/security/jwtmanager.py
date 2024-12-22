@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import encode, decode
 
 
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cfg.settings import settings
 from app.database.repo.user_repository import UserRepository
@@ -41,7 +41,7 @@ class JWTManager:
         except:
             return err("Invalid token")
     
-    async def get_current_user(self, token: str, session: Session):
+    async def get_current_user(self, token: str, session: AsyncSession):
         
         payload = self.decode_token(token)
         username: str = payload.get("userId")
