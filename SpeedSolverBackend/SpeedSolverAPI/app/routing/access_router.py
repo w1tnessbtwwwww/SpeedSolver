@@ -67,6 +67,7 @@ async def refresh_access_token(request: Request):
     if token_data.error:
         raise HTTPException(status_code=400, detail=token_data.error)
 
+
     with await get_session() as session:
         user = await UserRepository(session).get_by_filter_one(userId=token_data.value["userId"])
         if not user:
