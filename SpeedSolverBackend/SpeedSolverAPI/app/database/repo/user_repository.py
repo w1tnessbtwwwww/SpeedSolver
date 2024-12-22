@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.routing.security.hasher import verify_password
 from app.utils.result import Result, err, success
