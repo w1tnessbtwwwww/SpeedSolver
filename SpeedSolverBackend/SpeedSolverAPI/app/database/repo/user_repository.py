@@ -21,7 +21,7 @@ class UserRepository(AbstractRepository):
     async def delete_by_id(self, id):
         try:
             result = self._session.execute(delete(self.model).where(self.model.userId == id))
-            self._session.commit()
+            await self._session.commit()
             return success(result.rowcount)
         except Exception as e:
             return err(str(e))
