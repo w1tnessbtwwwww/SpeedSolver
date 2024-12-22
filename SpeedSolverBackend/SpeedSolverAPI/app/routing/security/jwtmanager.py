@@ -44,7 +44,10 @@ class JWTManager:
     async def get_current_user(self, token: str, session: AsyncSession):
         
         payload = self.decode_token(token)
-        username: str = payload.get("userId")
+        if payload.error:
+            return err(payload.error)
+        
+        username: str = payload.value.get("userId")
         if username is None:
             raise HTTPException(
             status_code=401,
