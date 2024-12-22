@@ -1,6 +1,6 @@
 
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
 from app.database.repo.user_repository import UserRepository
@@ -19,7 +19,7 @@ from app.routing.security.jwttype import JWTType
 
 class UserService:
 
-    def __init__(self, session: Session):
+    def __init__(self, session: AsyncSession):
         self._session = session
         self._repo: UserRepository = UserRepository(session)
 
