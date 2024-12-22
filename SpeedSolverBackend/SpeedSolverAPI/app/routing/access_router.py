@@ -18,14 +18,15 @@ from app.utils.result import Result
 from app.routing.security.jwttype import JWTType
 from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
 
+from app.exc.bad_email import BadEmail
 
-
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
+
 @auth_router.post("/register")
-async def register(registerRequest: RegisterRequest, session: Session = Depends(get_session)):
+async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
     registered: Result = await UserService(session).register(registerRequest)
     if not registered.success:
         raise HTTPException(status_code=400, detail=registered.error)
@@ -36,7 +37,7 @@ async def register(registerRequest: RegisterRequest, session: Session = Depends(
 
 
 @auth_router.post("/authorize")
-async def authorize(username: str = Form(), password: str = Form(), session: Session = Depends(get_session)):
+async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
     
     authorized: Result[AccessToken] = await UserService(session).authorize(username, password)
     if not authorized.success:
