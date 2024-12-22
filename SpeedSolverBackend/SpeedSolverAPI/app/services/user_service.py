@@ -1,4 +1,5 @@
 
+from typing import List, Sequence
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,7 +39,7 @@ class UserService:
         except Exception as e: 
             return success("Что-то пошло не так. Информация уже направлена разработчику.")
         
-    async def authorize(self, email: str, password: str) -> Result[AccessToken]:
+    async def authorize(self, email: str, password: str):
         authenticated: Result = await self._repo.authenticate_user(email, password)
         if authenticated.error:
             return err(authenticated.error)
@@ -49,11 +50,10 @@ class UserService:
         }
 
         jwt_manager = JWTManager()
-        return success(AccessToken(
-            access_token=jwt_manager.encode_token(payload, token_type=JWTType.ACCESS),
-            refresh_token=jwt_manager.encode_token(payload, token_type=JWTType.REFRESH),
-            token_type="Bearer"
-        ))
+        return [success(AccessToken(access_token=jwt_manager.encode_token(payload, token_type=JWTType.ACCESS), 
+                                    refresh_token=jwt_manager.encode_token(payload, token_type=JWTType.REFRESH), 
+                                    token_type="Bearer")), 
+                                    authenticated.value.is_mail_verified]
 
     async def delete_profile(self, token: str):
         user: User = await JWTManager().get_current_user(token, self._session)

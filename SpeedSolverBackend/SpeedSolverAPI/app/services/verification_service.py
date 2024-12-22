@@ -11,12 +11,15 @@ class VerificationService:
         self._repo: VerificationRepository = VerificationRepository(session)
 
 
-    async def request_verification(self, email: str, to_user: str) -> Result[None]:
+    async def request_verification(self, token: str, to_user: str) -> Result[None]:
         try:
-            code = await self._repo.insert_verification(to_user)
-            await EmailService().send_verify_code("Подтверждение регистрации", email, f"{code.value.verification_code}")
+            user = await JWTManager().get_current_user(token, self._session)
+            code = await EmailService.send_verify_code("Подтверждение регистрации", f"{user.email}", f"{code.value.verification_code}")
+            await self._repo.insert_verification(to_user, code)
         except Exception as e:
             return err("Произошла ошибка при создании верификации.")
         
-    async def confirm_email(self, email: str, code: str) -> Result[None]:
-        return await self._repo.confirm_email(email, code)
+    async def confirm_email(self, token: str, code: str) -> Result[None]:
+        user = await JWTManager().get_current_user(token, self._session)
+        
+        return await self._repo.confirm_email(user.userId, code)

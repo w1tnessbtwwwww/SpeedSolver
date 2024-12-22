@@ -28,8 +28,8 @@ auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 
 @auth_router.get("/email/confirm")
-async def confirm_email(code: str, email: str, session: AsyncSession = Depends(get_session)):
-    result = await VerificationService(session).confirm_email(email, code)
+async def confirm_email(code: str, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
+    result = await VerificationService(session).confirm_email(token, code)
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
     
@@ -42,7 +42,7 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
     registered: Result = await UserService(session).register(registerRequest)
     if not registered.success:
         raise HTTPException(status_code=400, detail=registered.error)
-    
+    print(registered.value.email)
     verification: Result = await VerificationService(session).request_verification(registered.value.email, registered.value.userId)
 
     return {
@@ -53,19 +53,18 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
 @auth_router.post("/authorize")
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
     
-    authorized: Result[AccessToken] = await UserService(session).authorize(username, password)
+    authorized = await UserService(session).authorize(username, password)
     if not authorized.success:
         raise HTTPException(status_code=400, detail=authorized.error)
     
     response = JSONResponse(
         content = {
-            "access_token": authorized.value.access_token,
-            "refresh_token": authorized.value.refresh_token,
-            "token_type": "Bearer"
+            "access_token": authorized[0].value.access_token,
+            "refresh_token": authorized[0].value.refresh_token,
+            "token_type": "Bearer",
+            "is_email_confirmed": authorized[1]
         }
     )
-    response.set_cookie(key="access_token", value=authorized.value.access_token, httponly=True)
-    response.set_cookie(key="refresh_token", value=authorized.value.refresh_token, httponly=True)
     return response
 
 

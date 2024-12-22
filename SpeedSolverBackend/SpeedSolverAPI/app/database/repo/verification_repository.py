@@ -9,7 +9,7 @@ from app.utils.verify_codes_generator.code_generator import generate_confirmatio
 class VerificationRepository(AbstractRepository):
     model = EmailVerification
 
-    async def insert_verification(self, for_user: str) -> Result[None]:
+    async def insert_verification(self, for_user: str, verification_code: str) -> Result[None]:
         query = (
             select(self.model)
             .where(self.model.userId == for_user)
@@ -19,14 +19,14 @@ class VerificationRepository(AbstractRepository):
         result = await self._session.execute(query)
         verification = result.scalars().first()
         if not verification:
-            creating = await self.create(userId=for_user)
-            return success(creating) if creating else err("Не удалось добавить код верификации.")
+            creating = await self.create(userId=for_user, verification_code=verification_code)
+            return success("Код успешно добавленн") if creating else err("Не удалось добавить код верификации.")
         
-        replacing = await self.update(userId=for_user, verification_code=f"{generate_confirmation_code()}")
+        replacing = await self.update(userId=for_user, verification_code=verification_code)
         return success(f"Новый код успешно отправлен на почту {verification.user.email}") if replacing else err("Не удалось обновить код верификации.")
     
 
-    async def confirm_email(self, email: str, code: str) -> Result[None]:
+    async def confirm_email(self, userId: str, code: str) -> Result[None]:
         query = (
             select(self.model)
             .where(self.model.userId == userId)
