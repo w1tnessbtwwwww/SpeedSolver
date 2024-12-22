@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 948a01d76e82
+Revision ID: 26e74bb7d56d
 Revises: 
-Create Date: 2024-12-22 00:34:30.958277
+Create Date: 2024-12-22 16:00:34.382467
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '948a01d76e82'
+revision: str = '26e74bb7d56d'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -39,8 +39,17 @@ def upgrade() -> None:
     sa.Column('email', sa.String(), nullable=True),
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('registered', sa.Date(), nullable=True),
+    sa.Column('is_mail_verified', sa.Boolean(), nullable=False),
     sa.PrimaryKeyConstraint('userId'),
     sa.UniqueConstraint('email')
+    )
+    op.create_table('email_verifications',
+    sa.Column('verification_id', sa.UUID(), nullable=False),
+    sa.Column('userId', sa.UUID(), nullable=False),
+    sa.Column('verification_code', sa.String(), nullable=False),
+    sa.ForeignKeyConstraint(['userId'], ['users.userId'], ),
+    sa.PrimaryKeyConstraint('verification_id'),
+    sa.UniqueConstraint('userId')
     )
     op.create_table('organizations',
     sa.Column('organizationId', sa.UUID(), nullable=False),
@@ -107,6 +116,7 @@ def downgrade() -> None:
     op.drop_table('teams')
     op.drop_table('user_profiles')
     op.drop_table('organizations')
+    op.drop_table('email_verifications')
     op.drop_table('users')
     op.drop_table('projects')
     op.drop_table('objectives')
