@@ -14,7 +14,7 @@ class UserProfileRepository(AbstractRepository):
     async def update(self, userId: str, **kwargs):
         query = update(self.model).where(self.model.userId == userId).values(**kwargs).returning(self.model)
         result = self._session.execute(query)
-        self._session.commit()
+        await self._session.commit()
         return result.scalars().first()
 
     async def update_profile(self, 
