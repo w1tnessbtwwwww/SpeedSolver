@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
+
 from app.database.repo.user_repository import UserRepository
 
 from app.schema.request.get_access import authorize, register
@@ -33,9 +34,9 @@ class UserService:
             user = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
             return success(user)
         except IntegrityError:
-            return err("User already exists")
+            return err("Такой пользователь уже есть.")
         except Exception as e: 
-            return success("Some error while attemping resource.")
+            return success("Что-то пошло не так. Информация уже направлена разработчику.")
         
     async def authorize(self, email: str, password: str) -> Result[AccessToken]:
         authenticated: Result = await self._repo.authenticate_user(email, password)
