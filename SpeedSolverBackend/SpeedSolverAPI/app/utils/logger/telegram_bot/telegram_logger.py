@@ -1,19 +1,58 @@
+import datetime
 from app.cfg.settings import settings
+
+from app.utils.logger.logger import Logger
+
 import telebot
 
-class TelegramLogger:
-    def __init__(self):
-        self.bot = telebot.TeleBot(settings.TELEGRAM_BOT_TOKEN)
-    
+from app.utils.result import Result, err, success
 
-    async def info(message: str) -> str:
-        ...
+class TelegramLogger(Logger):
+    def __init__(self, 
+                 token: str = settings.TELEGRAM_API_TOKEN, 
+                 chat_id: str = settings.TELEGRAM_CHAT_ID):
+        self._bot = telebot.TeleBot(token)
+        self._chat_id = chat_id
 
-    async def error(message: str) -> str:
-        ...
 
-    async def warning(message: str) -> str:
-        ...
-    
-    async def fatal(message: str) -> str:
-        ...
+    async def send_log(self, template: str) -> Result[None]:
+        try:
+            await self._bot.send_message(self._chat_id, template, parse_mode="Markdown")
+            return success()
+        except:
+            return err("Произошла ошибка")
+
+    async def info(self, message: str):
+        template = f"""❗**INFO**❗\n 
+        {message}\n
+        Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+        """
+        
+        sending = await self.send_log(template)
+        
+
+    async def error(self, message: str) -> str:
+        template = f"""🚨 **ERROR** 🚨\n 
+        {message}\n
+        Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+        """
+        
+        sending = await self.send_log(template)
+
+    async def warning(self, message: str) -> str:
+        template = f"""⚠️ **WARNING** ⚠️\n 
+        {message}\n
+        Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+        """
+        
+        sending = await self.send_log(template)
+        
+    async def fatal(self, message: str) -> str:
+        template = f"""🆘 **FATAL** 🆘\n 
+        {message}\n
+        Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+        """
+        
+        sending = await self.send_log(template)
+
+logger: TelegramLogger = TelegramLogger()
