@@ -15,44 +15,44 @@ class TelegramLogger(Logger):
         self._chat_id = chat_id
 
 
-    async def send_log(self, template: str) -> Result[None]:
+    def send_log(self, template: str) -> Result[None]:
         try:
-            await self._bot.send_message(self._chat_id, template, parse_mode="Markdown")
+            self._bot.send_message(self._chat_id, template, parse_mode="Markdown")
             return success()
         except:
             return err("Произошла ошибка")
 
-    async def info(self, message: str):
+    def info(self, message: str):
         template = f"""❗**INFO**❗\n 
         {message}\n
         Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
         """
         
-        sending = await self.send_log(template)
+        sending = self.send_log(template)
         
 
-    async def error(self, message: str) -> str:
+    def error(self, message: str) -> str:
         template = f"""🚨 **ERROR** 🚨\n 
         {message}\n
         Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
         """
         
-        sending = await self.send_log(template)
+        sending = self.send_log(template)
 
-    async def warning(self, message: str) -> str:
+    def warning(self, message: str) -> str:
         template = f"""⚠️ **WARNING** ⚠️\n 
         {message}\n
         Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
         """
         
-        sending = await self.send_log(template)
+        sending = self.send_log(template)
         
-    async def fatal(self, message: str) -> str:
+    def fatal(self, message: str) -> str:
         template = f"""🆘 **FATAL** 🆘\n 
         {message}\n
         Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
         """
         
-        sending = await self.send_log(template)
+        sending = self.send_log(template)
 
 logger: TelegramLogger = TelegramLogger()
