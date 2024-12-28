@@ -5,6 +5,8 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from typing import List
 
+from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
+
 Base = declarative_base()
 
 class Objective(Base):
@@ -86,7 +88,7 @@ class EmailVerification(Base):
     verification_id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), unique=True)
 
-    verification_code: Mapped[str] = mapped_column()
+    verification_code: Mapped[str] = mapped_column(default=str(generate_confirmation_code()))
 
     user: Mapped["User"] = relationship("User", back_populates="verification")
     

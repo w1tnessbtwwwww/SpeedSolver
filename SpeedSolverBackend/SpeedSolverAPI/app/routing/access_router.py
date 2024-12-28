@@ -9,14 +9,16 @@ from app.database.database import get_session
 from app.schema.response.AccessToken import AccessToken
 from app.schema.request.get_access.register import RegisterRequest
 
-
 from app.services.user_service import UserService
 
+from app.services.verification_service import VerificationService
 
 from app.utils.result import Result
+from app.utils.verify_codes_generator.code_generator import generate_confirmation_code 
 
 from app.routing.security.jwttype import JWTType
 from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
+from app.routing.security.jwtmanager import oauth2_scheme
 
 from app.exc.bad_email import BadEmail
 
@@ -25,34 +27,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 
+
 @auth_router.post("/register")
 async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
-    registered: Result = await UserService(session).register(registerRequest)
-    if not registered.success:
-        raise HTTPException(status_code=400, detail=registered.error)
-    
-    return {
-        "register": "User registered successfully"        
-    }
+    ...
 
 
 @auth_router.post("/authorize")
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
-    
-    authorized: Result[AccessToken] = await UserService(session).authorize(username, password)
-    if not authorized.success:
-        raise HTTPException(status_code=400, detail=authorized.error)
-    
-    response = JSONResponse(
-        content = {
-            "access_token": authorized.value.access_token,
-            "refresh_token": authorized.value.refresh_token,
-            "token_type": "Bearer"
-        }
-    )
-    response.set_cookie(key="access_token", value=authorized.value.access_token, httponly=True)
-    response.set_cookie(key="refresh_token", value=authorized.value.refresh_token, httponly=True)
-    return response
+    ...
 
 
 async def refresh_access_token(request: Request):
@@ -68,12 +51,13 @@ async def refresh_access_token(request: Request):
         raise HTTPException(status_code=400, detail=token_data.error)
 
 
-    with await get_session() as session:
-        user = await UserRepository(session).get_by_filter_one(userId=token_data.value["userId"])
-        if not user:
-            raise HTTPException(status_code=400, detail="User not found")
-        
-        return jwt_manager.encode_token({ "userId": str(user.userId), "email": user.email }, token_type=JWTType.ACCESS)
+    session: AsyncSession = await get_session()
+    user = await UserRepository(session).get_by_filter_one(userId=token_data.value["userId"])
+    session.close()
+    if not user:
+        raise HTTPException(status_code=400, detail="User not found")
+    
+    return jwt_manager.encode_token({ "userId": str(user.userId), "email": user.email }, token_type=JWTType.ACCESS)
 
 @auth_router.get("/refresh")
 async def refresh(token: str = Depends(refresh_access_token)):
