@@ -1,5 +1,7 @@
+from abc import ABC, abstractmethod
 
-
-class Logger:
-    def __init__(self):
+class Logger(ABC):
+    
+    @abstractmethod
+    async def send_log(message: str = "Empty Log"):
         ...
