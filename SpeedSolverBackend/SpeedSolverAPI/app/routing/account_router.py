@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.routing.security.jwtmanager import oauth2_scheme
 
@@ -16,7 +16,7 @@ account_router = APIRouter(
 )
 
 @account_router.post("/updateprofile")
-async def update_profile(updateRequest: UpdateProfile, token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+async def update_profile(updateRequest: UpdateProfile, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
    result = await UserProfileService(session).update_profile(token, updateRequest)
 
    if not result.success:
@@ -28,7 +28,7 @@ async def update_profile(updateRequest: UpdateProfile, token: str = Depends(oaut
    return result.value
    
 @account_router.delete("/delete")
-async def delete_account(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):
+async def delete_account(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
     result = await UserService(session).delete_profile(token)
 
     if not result.success:

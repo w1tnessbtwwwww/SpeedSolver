@@ -3,13 +3,16 @@ from email.mime.multipart import MIMEMultipart
 import smtplib
 from app.cfg.settings import settings
 from app.utils.result import Result, err, success
+from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
 
 class EmailService:
 
     @staticmethod
-    def send_verify_code(subject: str, send_to: str, code: int):
+    async def send_verify_code(subject: str, send_to: str) -> Result[str]:
         smtp_server = 'smtp.mail.ru'
         smtp_port = 587
+
+        print(settings.MAIL_EMAIL)
         smtp_username = settings.MAIL_EMAIL
         smtp_password = settings.MAIL_PASSWORD
 
@@ -23,8 +26,12 @@ class EmailService:
         msg['To'] = to_addr
         msg['Subject'] = subject
 
+
+        code = generate_confirmation_code()
         # Текст сообщения
-        msg.attach(MIMEText(str(code), 'plain'))
+        msg.attach(MIMEText(f"Здравствуйте!\nВаш код подтверждения для регистрации в сервисе SpeedSolver: {code}"))
+        
+        result = None
 
         # Отправка сообщения
         try:
@@ -34,7 +41,10 @@ class EmailService:
             text = msg.as_string()
             server.sendmail(from_addr, to_addr, text)
             print('Сообщение успешно отправлено')
+            result = success(code)
         except Exception as e:
             print(f'Ошибка при отправке сообщения: {e}')
+            result = err(str(e))
         finally:
             server.quit()
+            return result

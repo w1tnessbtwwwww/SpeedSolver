@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.routing.security.hasher import verify_password
 from app.utils.result import Result, err, success
@@ -20,8 +20,8 @@ class UserRepository(AbstractRepository):
     
     async def delete_by_id(self, id):
         try:
-            result = self._session.execute(delete(self.model).where(self.model.userId == id))
-            self._session.commit()
+            result = await self._session.execute(delete(self.model).where(self.model.userId == id))
+            await self._session.commit()
             return success(result.rowcount)
         except Exception as e:
             return err(str(e))

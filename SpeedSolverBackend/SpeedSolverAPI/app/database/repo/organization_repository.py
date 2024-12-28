@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.routing.security.hasher import verify_password
 from app.utils.result import *
@@ -22,7 +22,7 @@ class OrganizationRepository(AbstractRepository):
                     self.model.title == kwargs['title']
                 ))
             )
-            result = self._session.execute(query)
+            result = await self._session.execute(query)
             organization = result.scalars().first()
             if organization:
                 return err("Organization already exists")

@@ -16,6 +16,9 @@ class Settings(BaseSettings):
 
     MAIL_EMAIL: str
     MAIL_PASSWORD: str
+
+    TELEGRAM_API_TOKEN: str
+    TELEGRAM_CHAT_ID: str
     
     class Config:
         env_file = ".env"
