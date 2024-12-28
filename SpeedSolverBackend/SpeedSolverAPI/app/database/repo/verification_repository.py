@@ -1,48 +1,50 @@
 from app.database.abstract.abc_repo import AbstractRepository
-from app.database.models.models import EmailVerification
-from sqlalchemy import select, update, delete, insert
-
-from app.database.models.models import User
+from app.database.models.models import EmailVerification, User
 
 from app.utils.result import Result, err, success
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
+
+from sqlalchemy import and_, select, update, delete, insert
+from sqlalchemy.exc import IntegrityError
+
+
 class VerificationRepository(AbstractRepository):
     model = EmailVerification
 
     async def insert_verification(self, for_user: str, verification_code: str) -> Result[None]:
-        query = (
-            select(self.model)
-            .where(self.model.userId == for_user)
-            .join(User, User.userId == self.model.userId)
-        )
-
-        result = await self._session.execute(query)
-        verification = result.scalars().first()
-        if not verification:
+        try:
             creating = await self.create(userId=for_user, verification_code=verification_code)
-            return success("Код успешно добавленн") if creating else err("Не удалось добавить код верификации.")
+            return success("Код на верификацию почты успешно создан.") if creating else err("Не удалось создать код на верификацию почты.")
+        except IntegrityError:
+            updating = await self.update(for_user=for_user, verification_code=verification_code)
+            return success("Код на подтверждение успешно обновлен.") if updating else err("Не удалось обновить код для подтверждения почты.")
         
-        replacing = await self.update(userId=for_user, verification_code=verification_code)
-        return success(f"Новый код успешно отправлен на почту {verification.user.email}") if replacing else err("Не удалось обновить код верификации.")
-    
-
     async def confirm_email(self, userId: str, code: str) -> Result[None]:
-        query = (
-            select(self.model)
-            .where(self.model.userId == userId)
-            .join(User, User.userId == self.model.userId)
-        )
+        try:
+            query = (
+                select(self.model)
+                .where(
+                    self.model.userId == userId,
+                )
+            )
 
+            result = await self._session.execute(query)
+            verification = result.scalars().first()
+            if code == verification.verification_code:
+                await self.delete_by_id(userId)
+                return success("Верификация прошла успешно.")
+            return err("Код не верный.")
+        except Exception as e:
+            return err("Проиизошла ошибка. Информация направлена разработчику.")
+    async def update(self, for_user: str, **kwargs):
+        ...
 
-        result = await self._session.execute(query)
-        verify = result.scalars().first()
-        if not verify:
-            return err("Пользователь не найден или почта уже подтверждена.")
-        
-        if (code == verify.verification_code):
-            verify.user.is_mail_verified = True
-            await self.session.execute(delete(self.model).where(self.model.userId == verify.userId))
+    async def delete_by_id(self, id) -> Result[int]:
+        try:
+            result = await self._session.execute(
+                delete(self.model).where(self.model.userId == id)
+            )
             await self._session.commit()
-            return success("Почта успешно подтверждена.")
-        
-        return err("Неверный код.")
+            return success(result.rowcount)
+        except:
+            return err(0)
