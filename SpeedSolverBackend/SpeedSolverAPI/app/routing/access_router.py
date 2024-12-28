@@ -27,45 +27,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 
-@auth_router.get("/email/confirm")
-async def confirm_email(code: str, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
-    result = await VerificationService(session).confirm_email(token, code)
-    if not result.success:
-        raise HTTPException(status_code=400, detail=result.error)
-    
-    return {
-        "message": "Почта успешно подтверждена"
-    }
 
 @auth_router.post("/register")
 async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
-    registered: Result = await UserService(session).register(registerRequest)
-    if not registered.success:
-        raise HTTPException(status_code=400, detail=registered.error)
-    print(registered.value.email)
-    verification: Result = await VerificationService(session).request_verification(registered.value.email, registered.value.userId)
-
-    return {
-        "register": "Вы успешно зарегистрировались. На указанную почту отправлен код подтвержедения."        
-    }
+    ...
 
 
 @auth_router.post("/authorize")
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
-    
-    authorized = await UserService(session).authorize(username, password)
-    if not authorized.success:
-        raise HTTPException(status_code=400, detail=authorized.error)
-    
-    response = JSONResponse(
-        content = {
-            "access_token": authorized[0].value.access_token,
-            "refresh_token": authorized[0].value.refresh_token,
-            "token_type": "Bearer",
-            "is_email_confirmed": authorized[1]
-        }
-    )
-    return response
+    ...
 
 
 async def refresh_access_token(request: Request):
