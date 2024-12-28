@@ -15,6 +15,7 @@ pydantic-settings = "^2.7.0"
 uvicorn = "^0.34.0"
 yarl = "^1.18.3"
 asyncpg = "^0.30.0"
+pytelegrambotapi = "^4.25.0"
 
 
 [build-system]
