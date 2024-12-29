@@ -30,7 +30,12 @@ auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 @auth_router.post("/register")
 async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
-    ...
+    registered = await UserService(session).register(registerRequest)
+    if not registered.success:
+        raise HTTPException(status_code=400, detail=registered.error)
+    return {
+        "message": registered.value
+    }
 
 
 @auth_router.post("/authorize")

@@ -11,6 +11,7 @@ from app.schema.request.get_access import authorize, register
 from app.schema.request.account.updateprofile import UpdateProfile
 from app.schema.response.AccessToken import AccessToken
 
+from app.services.verification_service import VerificationService
 from app.utils.email_service.email_service import EmailService
 from app.utils.result import Result, err, success
 
@@ -33,7 +34,8 @@ class UserService:
 
     async def register(self, register_request: register.RegisterRequest) -> Result[None]:
        try:
-           await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
+           inserted = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
+           await VerificationService(self._session).create_verification(inserted.userId, register_request.email)
        except IntegrityError as e:
            return err("Пользователь с такой почтой уже зарегистрирован.")
        return success("Пользователь успешно зарегистрирован. Проверьте почту.")
