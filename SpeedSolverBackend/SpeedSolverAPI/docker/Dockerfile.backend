@@ -1,5 +1,5 @@
 # Используем официальный образ Python
-FROM python:3.13.1-slim-bullseye AS prod
+FROM python:3.13-slim-bullseye AS prod
 
 # Устанавливаем необходимые зависимости
 RUN apt-get update && apt-get install -y \
