@@ -4,7 +4,7 @@ import smtplib
 from app.cfg.settings import settings
 from app.utils.result import Result, err, success
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
-
+from app.utils.logger.telegram_bot.telegram_logger import logger
 class EmailService:
 
     @staticmethod
@@ -42,9 +42,11 @@ class EmailService:
             server.sendmail(from_addr, to_addr, text)
             print('Сообщение успешно отправлено')
             result = success(code)
+            logger.info(f"sended code {code} to {send_to}")
         except Exception as e:
             print(f'Ошибка при отправке сообщения: {e}')
             result = err(str(e))
+            logger.error(f'Ошибка при отправке сообщения: {e}')
         finally:
             server.quit()
             return result
