@@ -17,4 +17,4 @@ class VerificationService:
         if not verification.success:
             logger.error(verification.error)
             return err(verification.error)
-        return await self._repo.insert_verification(user_id, verification.value) 
+        return await self._repo.insert_verification(user_id, verification.value)
