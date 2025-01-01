@@ -41,7 +41,21 @@ class UserService:
        return success("Пользователь успешно зарегистрирован. Проверьте почту.")
         
     async def authorize(self, email: str, password: str):
-        ...
+        authenticated = await self._repo.authenticate_user(email, password)
+        if not authenticated.success:
+            return err("Неправильный логин или пароль")
+        
+        if not authenticated.value.is_mail_verified:
+            return err("Почта не подтверждена. Если кода нет, запросите его повторно")
+        return success(authenticated.value)
+        
+    async def is_email_verified(self, username: str) -> Result[None]:
+        user = await self._repo.get_by_filter_one(userId=user_id)
+        if not user:
+            return err("User not found")
+        if not user.is_mail_verified:
+            return err("Email not verified")
+        return success("Email verified")
 
     async def delete_profile(self, token: str):
         user: User = await JWTManager().get_current_user(token, self._session)
