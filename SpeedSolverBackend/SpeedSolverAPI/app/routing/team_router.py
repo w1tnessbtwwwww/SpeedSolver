@@ -24,7 +24,7 @@ async def create_team(createRequest: CreateTeam, token: str = Depends(oauth2_sch
     
     return created.value
 
-@team_router.post("/update", summary="Обновить команду")
+@team_router.put("/update", summary="Обновить команду")
 async def update_team(updateRequest: UpdateTeam, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
     updated = await TeamService(session).update_team(updateRequest, token)
 
