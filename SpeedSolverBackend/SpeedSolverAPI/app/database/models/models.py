@@ -86,9 +86,10 @@ class EmailVerification(Base):
     __tablename__ = "email_verifications"
 
     verification_id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), unique=True)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), nullable=False)
 
     verification_code: Mapped[str] = mapped_column(default=str(generate_confirmation_code()))
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
     user: Mapped["User"] = relationship("User", back_populates="verification")
     
