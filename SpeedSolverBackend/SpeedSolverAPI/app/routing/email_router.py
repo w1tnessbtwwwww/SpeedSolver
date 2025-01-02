@@ -1,16 +1,15 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
+from app.database.database import get_session
 from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
+
+from sqlalchemy.ext.asyncio import AsyncSession
 
 email_router = APIRouter(
     prefix="/email",
     tags=["Email"]
 )
 
-@email_router.post("/confirm")
-async def confirm_email(user_id: str, code: str, token: str = Depends(oauth2_scheme)):
-    user = JWTManager().get_current_user()
-
 @email_router.post("/change")
-async def change_email(user_id: str, email: str):
-    ...
+async def change_email(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
+    raise HTTPException(status_code=400, detail="Not implemented")
