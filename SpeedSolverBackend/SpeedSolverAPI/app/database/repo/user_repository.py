@@ -2,11 +2,14 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.routing.security.hasher import verify_password
-from app.utils.result import Result, err, success
-from ..abstract.abc_repo import AbstractRepository
-from app.database.models.models import User
 
-from sqlalchemy import CursorResult, delete, select, update, insert
+from app.utils.result import Result, err, success
+from app.utils.logger.telegram_bot.telegram_logger import logger
+
+from app.database.models.models import User
+from app.database.abstract.abc_repo import AbstractRepository
+
+from sqlalchemy import delete, select, update, insert
 
 class UserRepository(AbstractRepository):
     model = User
@@ -26,12 +29,17 @@ class UserRepository(AbstractRepository):
         return success(user)
     
     async def get_by_email(self, email) -> Optional[User]:
-        result = await self._session.execute(select(self.model).where(self.model.email == email))
-        user = result.scalars().first()
-        if not user:
-            return None
-        
-        return user
+        try:
+
+            result = await self._session.execute(select(self.model).where(self.model.email == email))
+            user = result.scalars().first()
+            if not user:
+                return None
+            return user
+
+        except Exception as e:
+            logger.error(f"Произошла ошибка в UserRepository.", str(e))
+    
     async def delete_by_id(self, id):
         try:
             result = await self._session.execute(delete(self.model).where(self.model.userId == id))
