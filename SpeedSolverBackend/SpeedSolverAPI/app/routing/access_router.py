@@ -42,7 +42,7 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
     user = await UserRepository(session).get_by_filter_one(email=username)
     if not user:
-        raise HTTPException(status_code=400, detail="User not found")
+        raise HTTPException(status_code=400, detail="Пользователь не найден")
     authorized = await UserService(session).authorize(username, password)
     if not authorized.success:
         raise HTTPException(status_code=400, detail=authorized.error)
@@ -54,6 +54,7 @@ async def authorize(username: str = Form(), password: str = Form(), session: Asy
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="Bearer"
+        
     )
 
 
