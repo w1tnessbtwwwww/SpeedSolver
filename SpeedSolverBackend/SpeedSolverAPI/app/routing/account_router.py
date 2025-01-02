@@ -15,7 +15,7 @@ account_router = APIRouter(
     tags=["Account"]
 )
 
-@account_router.post("/updateprofile")
+@account_router.put("/updateprofile")
 async def update_profile(updateRequest: UpdateProfile, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
    result = await UserProfileService(session).update_profile(token, updateRequest)
 
