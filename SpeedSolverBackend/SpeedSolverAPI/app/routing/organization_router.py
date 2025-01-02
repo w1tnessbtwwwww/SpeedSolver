@@ -13,12 +13,4 @@ organization_router = APIRouter(
 
 @organization_router.post("/create")
 async def create_organization(createRequest: CreateOrganization, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
-    created = await OrganizationService(session).create_organization(createRequest, token)
-
-    if not created.success:
-        raise HTTPException(
-            status_code=400, 
-            detail=created.error
-        )
-    
-    return created.value
+    raise HTTPException(status_code=400, detail="Not implemented")
