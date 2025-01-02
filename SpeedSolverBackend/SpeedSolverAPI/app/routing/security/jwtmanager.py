@@ -41,7 +41,7 @@ class JWTManager:
         except:
             return err("Invalid token")
     
-    async def get_current_user(self, token: str, session: AsyncSession):
+    async def get_current_user(self, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
         
         payload = self.decode_token(token)
         if payload.error:
