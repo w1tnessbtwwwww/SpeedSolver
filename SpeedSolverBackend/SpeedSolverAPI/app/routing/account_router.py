@@ -29,12 +29,4 @@ async def update_profile(updateRequest: UpdateProfile, token: str = Depends(oaut
    
 @account_router.delete("/delete")
 async def delete_account(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
-    result = await UserService(session).delete_profile(token)
-
-    if not result.success:
-        raise HTTPException(
-            status_code=400, 
-            detail=result.error
-        )
-    
-    return result.value
+    raise HTTPException(status_code=400, detail="Not implemented")
