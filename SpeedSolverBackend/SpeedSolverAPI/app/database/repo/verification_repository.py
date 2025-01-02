@@ -1,4 +1,5 @@
 import datetime
+from typing import Annotated, Callable, Optional
 from app.database.abstract.abc_repo import AbstractRepository
 from app.database.models.models import EmailVerification, User
 
@@ -13,6 +14,13 @@ from sqlalchemy.exc import IntegrityError
 
 class VerificationRepository(AbstractRepository):
     model = EmailVerification
+
+    async def resend_verification(self, userId: str, verification_code: str) -> Result[Optional[EmailVerification]]: 
+        try:
+            return success(await self.create(userId=userId, verification_code=verification_code))
+        except Exception as e:
+            logger.error("Произшла ошибка в репозитории верификации.")
+            return err("Произошла ошибка. Информация уже направлена разработчику")
 
     async def process_verification(self, userId: str, verification_code: str) -> Result[None]:
         last_verification_query = (
