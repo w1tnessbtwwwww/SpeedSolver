@@ -16,6 +16,7 @@ asyncpg = "^0.30.0"
 sqlalchemy = "^2.0.36"
 pyjwt = "^2.10.1"
 yarl = "^1.18.3"
+bcrypt = "^4.2.1"
 
 
 [build-system]
