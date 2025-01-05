@@ -1,4 +1,5 @@
 import datetime
+from typing import Annotated, Callable, Optional
 from app.database.abstract.abc_repo import AbstractRepository
 from app.database.models.models import EmailVerification, User
 
@@ -14,6 +15,13 @@ from sqlalchemy.exc import IntegrityError
 class VerificationRepository(AbstractRepository):
     model = EmailVerification
 
+    async def resend_verification(self, userId: str, verification_code: str) -> Result[Optional[EmailVerification]]: 
+        try:
+            return success(await self.create(userId=userId, verification_code=verification_code))
+        except Exception as e:
+            logger.error("Произшла ошибка в репозитории верификации.")
+            return err("Произошла ошибка. Информация уже направлена разработчику")
+
     async def process_verification(self, userId: str, verification_code: str) -> Result[None]:
         last_verification_query = (
             select(self.model)
@@ -27,9 +35,6 @@ class VerificationRepository(AbstractRepository):
             verification = await self.create(userId=userId, verification_code=verification_code)
             return success(verification)
         
-        if datetime.datetime.now() > last_verification.created_at + datetime.timedelta(minutes=15):
-            return err("Время верификации истекло. Запросите верификацию повторно.")
-        
         return err("Верификация уже была пройдена.")
 
 
@@ -40,17 +45,22 @@ class VerificationRepository(AbstractRepository):
                 .where(
                     self.model.userId == userId,
                 )
+                .order_by(desc(self.model.created_at))
             )
 
             result = await self._session.execute(query)
             verification = result.scalars().first()
+
+            if datetime.datetime.now() > verification.created_at + datetime.timedelta(minutes=15):
+                return err("Время верификации истекло. Запросите верификацию повторно.")
+
             if code == verification.verification_code:
                 await self.delete_by_id(userId)
                 return success("Верификация прошла успешно.")
             return err("Код не верный.")
         except Exception as e:
             logger.error(e)
-            return err("Проиизошла ошибка. Информация направлена разработчику.")
+            return err("Проиизошла ошибка в сервисе верификации. Информация направлена разработчику.")
 
     async def delete_by_id(self, id) -> Result[int]:
         try:

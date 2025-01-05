@@ -36,7 +36,7 @@
 
 Для сообщений о нарушениях или вопросов по кодексу поведения, пожалуйста, свяжитесь с нами по следующим контактам:
 
-- [w1tnessbtwwwww] ([email@example.com])
+- [w1tnessbtwwwww] ([mailto:work.w1tnessbtw@mail.ru])
 
 ## Лицензия
 

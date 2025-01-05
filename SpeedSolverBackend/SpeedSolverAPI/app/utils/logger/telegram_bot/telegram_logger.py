@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from app.cfg.settings import settings
 
 from app.utils.logger.logger import Logger
@@ -23,35 +24,27 @@ class TelegramLogger(Logger):
             return err("Произошла ошибка")
 
     def info(self, message: str):
-        template = f"""❗**INFO**❗\n
-{message}\n
-Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
-"""
+        template = f"❗**INFO**❗\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
         sending = self.send_log(template)
         
 
-    def error(self, message: str) -> str:
-        template = f"""🚨 **ERROR** 🚨\n
-{message}\n
-Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
-"""
+    def error(self, message: str, traceback: Optional[str] = None) -> str:
+
+        if traceback:
+            template = f"🚨 **ERROR** 🚨\n{message}\n```python\n{traceback}```\nDate: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+        else:
+            template = f"🚨 **ERROR** 🚨\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
         sending = self.send_log(template)
         
     def warning(self, message: str) -> str:
-        template = f"""⚠️ **WARNING** ⚠️\n 
-{message}\n
-Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
-"""
+        template = f"⚠️ **WARNING** ⚠️\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
         sending = self.send_log(template)
         
     def fatal(self, message: str) -> str:
-        template = f"""🆘 **FATAL** 🆘\n 
-{message}\n
-Date: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
-"""
+        template = f"🆘 **FATAL** 🆘\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
         sending = self.send_log(template)
 
