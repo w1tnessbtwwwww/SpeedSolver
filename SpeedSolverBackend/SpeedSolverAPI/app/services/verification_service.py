@@ -22,7 +22,13 @@ class VerificationService:
         return verification
     
     async def resend_verification(self, userId: str, email: str):
-        return await self._repo.resend_verification(userId, email)
+        code = await EmailService().send_verify_code("Подтверждение письма", email)
+
+        if not code.success:
+            logger.fatal(f"Произошла ошибка в переотправке кода. {code.error}")
+            return
+
+        return await self._repo.resend_verification(userId, code.value)
     
     async def confirm_email(self, userId: str, code: str) -> Result[None]:
         return await self._repo.confirm_email(userId, code)

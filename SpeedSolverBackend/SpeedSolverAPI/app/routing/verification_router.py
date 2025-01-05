@@ -26,7 +26,7 @@ async def resend_verification(email: ResendCode, session: AsyncSession = Depends
         raise HTTPException(status_code=400, detail=user.error)
     
     
-    result = await VerificationService(session).resend_email(user.value.userId, user.value.email)
+    result = await VerificationService(session).resend_verification(user.value.userId, user.value.email)
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
     
