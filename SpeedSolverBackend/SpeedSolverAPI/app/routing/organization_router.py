@@ -39,5 +39,9 @@ async def update_organization(updateRequest: UpdateOrganization, user: User = De
 
 
 @organization_router.delete("/delete")
-async def delete_organization(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    raise HTTPException(status_code=400, detail="Not implemented")
+async def delete_organization(organizationId: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    deleting = await OrganizationService(session).delete_organization(organizationId, user.userId)
+    if not deleting.success:
+        raise HTTPException(status_code=400, detail=deleting.error)
+    
+    return deleting.value
