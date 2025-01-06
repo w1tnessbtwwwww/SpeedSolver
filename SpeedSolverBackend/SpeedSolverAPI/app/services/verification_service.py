@@ -15,8 +15,7 @@ class VerificationService:
     async def process_verification(self, userId: str, email: str):
         code = await EmailService().send_verify_code("Подтверждение письма", email)
         if not code.success:
-            logger.fatal(code.error)
-            return
+            return err("Не удалось отправить код. Возможно, неверная почта.")
 
         verification = await self._repo.process_verification(userId, code.value)
         return verification
