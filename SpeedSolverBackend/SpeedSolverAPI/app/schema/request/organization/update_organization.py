@@ -4,5 +4,5 @@ from typing import Optional
 
 class UpdateOrganization(BaseModel):
     organizationId: str
-    title: Optional[str] = None
-    description: Optional[str] = None
+    new_title: Optional[str] = None
+    new_description: Optional[str] = None
