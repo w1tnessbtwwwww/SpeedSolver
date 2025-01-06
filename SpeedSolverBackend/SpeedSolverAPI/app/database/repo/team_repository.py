@@ -27,7 +27,7 @@ class TeamRepository(AbstractRepository):
         team = result.scalars().first()
 
         if team:
-            return err("Team already exists")
+            return err("У вас уже есть такая команда.")
         
 
         return success(value = await self.create(title=title, description=description, leaderId=leaderId, organizationId=organizationId))
