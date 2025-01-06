@@ -44,9 +44,8 @@ class EmailService:
             result = success(code)
             logger.info(f"sended code {code} to {send_to}")
         except Exception as e:
-            print(f'Ошибка при отправке сообщения: {e}')
             result = err(str(e))
-            logger.error(f'Ошибка при отправке сообщения: {e}')
+            logger.error(f'Ошибка при отправке кода на почту.', str(e))
         finally:
             server.quit()
             return result
