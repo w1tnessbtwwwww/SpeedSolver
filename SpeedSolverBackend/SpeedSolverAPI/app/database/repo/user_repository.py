@@ -14,6 +14,11 @@ from sqlalchemy import delete, select, update, insert
 class UserRepository(AbstractRepository):
     model = User
 
+    async def create(self, **kwargs):
+        query = insert(self.model).values(**kwargs).returning(self.model)
+        result = await self._session.execute(query)
+        return result.scalars().first()
+
     async def update_by_id(self, userId: str, **kwargs):
         query = update(self.model).where(self.model.userId == userId).values(**kwargs).returning(self.model)
         result = await self._session.execute(query)
