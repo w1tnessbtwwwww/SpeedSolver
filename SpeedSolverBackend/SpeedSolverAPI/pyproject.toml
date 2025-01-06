@@ -15,6 +15,11 @@ greenlet = "^3.1.1"
 asyncpg = "^0.30.0"
 sqlalchemy = "^2.0.36"
 pyjwt = "^2.10.1"
+yarl = "^1.18.3"
+bcrypt = "^4.2.1"
+pytelegrambotapi = "^4.26.0"
+python-multipart = "^0.0.20"
+alembic = "^1.14.0"
 
 
 [build-system]

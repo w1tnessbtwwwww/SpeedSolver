@@ -42,10 +42,10 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
     user = await UserRepository(session).get_by_filter_one(email=username)
     if not user:
-        raise HTTPException(status_code=400, detail="Пользователь не найден")
+        raise HTTPException(status_code=401, detail="Пользователь не найден")
     authorized = await UserService(session).authorize(username, password)
     if not authorized.success:
-        raise HTTPException(status_code=400, detail=authorized.error)
+        raise HTTPException(status_code=401, detail=authorized.error)
     
     jwt_manager = JWTManager()
     access_token = jwt_manager.encode_token({ "userId": str(user.userId) }, token_type=JWTType.ACCESS)

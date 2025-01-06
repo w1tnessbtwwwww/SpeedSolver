@@ -35,15 +35,19 @@ class UserService:
         return await self._repo.update_by_id(userId, is_mail_verified=True)
 
     async def update_profile(self, token: str, update_request: UpdateProfile):
-        user: User = await JWTManager().get_current_user(token, self._session)
-        await self._repo.update_profile()
+        raise NotImplementedError
 
     async def register(self, register_request: register.RegisterRequest) -> Result[None]:
        try:
-           inserted = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
-           await VerificationService(self._session).process_verification(inserted.userId, inserted.email)
+            inserted = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
+            is_verification_inserted = await VerificationService(self._session).process_verification(inserted.userId, inserted.email)
+            if not is_verification_inserted.success:
+                self._repo.rollback()
+                return err(is_verification_inserted.error)
+            
+            await self._repo.commit()
        except IntegrityError as e:
-           return err("Пользователь с такой почтой уже зарегистрирован.")
+            return err("Пользователь с такой почтой уже зарегистрирован.")
        return success("Пользователь успешно зарегистрирован. Проверьте почту.")
         
     async def authorize(self, email: str, password: str):

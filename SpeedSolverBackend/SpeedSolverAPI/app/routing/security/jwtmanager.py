@@ -19,6 +19,30 @@ from app.routing.security.jwttype import JWTType
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/access/authorize")
 
+async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
+    
+
+    payload = JWTManager().decode_token(token)
+    if payload.error:
+        return err(payload.error)
+    
+    username: str = payload.value.get("userId")
+    if username is None:
+        raise HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    user = await UserRepository(session).get_by_filter_one(userId=username)
+    if user is None:
+        raise HTTPException(
+            status_code=401,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
 class JWTManager:
 
     def __init__(self):
@@ -41,25 +65,3 @@ class JWTManager:
         except:
             return err("Invalid token")
     
-    async def get_current_user(self, token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
-        
-        payload = self.decode_token(token)
-        if payload.error:
-            return err(payload.error)
-        
-        username: str = payload.value.get("userId")
-        if username is None:
-            raise HTTPException(
-            status_code=401,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-        
-        user = await UserRepository(session).get_by_filter_one(userId=username)
-        if user is None:
-            raise HTTPException(
-                status_code=401,
-                detail="User not found",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        return user
