@@ -28,7 +28,6 @@ api.add_middleware (
     CORSMiddleware,
     allow_origins=[
         "https://speedsolver.ru"
-        "http://speedsolver.ru"
     ],
     allow_credentials=True,
     allow_methods=["*"],
