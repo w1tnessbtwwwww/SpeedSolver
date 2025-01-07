@@ -34,6 +34,17 @@ class TeamRepository(AbstractRepository):
 
         return success(value = await self.create(title=title, description=description, leaderId=leaderId, organizationId=organizationId))
     
+
+    async def delete_team(self, teamId: str, leaderId: str):
+        query = delete(self.model).where(and_(self.model.teamId == teamId, self.model.leaderId == leaderId))
+        try:
+            result = await self._session.execute(query)
+            await self.commit()
+        except Exception as e:
+            logger.error(e)
+            return err("Внутренняя ошибка сервера. Информация уже отправлена разработчику.")
+        return success(result.scalars().first())
+
     async def update_team(self, 
                           teamId: str, 
                           leaderId: str, 
