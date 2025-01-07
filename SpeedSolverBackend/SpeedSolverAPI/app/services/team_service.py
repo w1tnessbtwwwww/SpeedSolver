@@ -1,4 +1,5 @@
 
+from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
@@ -14,17 +15,9 @@ class TeamService:
         self._session = session
         self._repo = TeamRepository(session)
 
-    async def create_team(self, createRequest: CreateTeam, token: str):
-        user = await JWTManager().get_current_user(token, self._session)
-        return await self._repo.create_team(createRequest.name, createRequest.description, user.userId, createRequest.organizationId)
+    async def create_team(self, createRequest: CreateTeam, leaderId: str, organizationId: Optional[str] = None):
+        return await self._repo.create_team(createRequest.name, createRequest.description, leaderId, createRequest.organizationId)
     
-    async def update_team(self, updateRequest: UpdateTeam, token: str):
-        user = await JWTManager().get_current_user(token, self._session)
-        return await self._repo.update_team(
-            updateRequest.teamId,
-            user.userId,
-            updateRequest.new_name,
-            updateRequest.new_description,
-            updateRequest.new_leader_id
-        )
+    async def update_team(self, updateRequest: UpdateTeam):
+        ...
         
