@@ -39,6 +39,7 @@ class VerificationRepository(AbstractRepository):
 
 
     async def confirm_email(self, userId: str, code: str) -> Result[None]:
+        logger.info(str(datetime.datetime.now()))
         try:
             query = (
                 select(self.model)
