@@ -22,7 +22,7 @@ class VerificationRepository(AbstractRepository):
             .where(self.model.userId == userId)
         )
 
-        clearing = await self._session.execute(clear_query)
+        await self._session.execute(clear_query)
         await self._session.commit()
 
         try:
