@@ -15,7 +15,10 @@ class TeamService:
         self._session = session
         self._repo = TeamRepository(session)
 
-    async def create_team(self, createRequest: CreateTeam, leaderId: str, organizationId: Optional[str] = None):
+    async def delete_team(self, team_id: str, leaderId: str):
+        return await self._repo.delete_team(teamId=team_id, leaderId=leaderId)
+
+    async def create_team(self, createRequest: CreateTeam, leaderId: str):
         return await self._repo.create_team(createRequest.name, 
                                             createRequest.description, 
                                             leaderId, 
