@@ -20,10 +20,9 @@ class UserProfileService:
         self._repo: UserProfileRepository = UserProfileRepository(session)
 
 
-    async def update_profile(self, token: str, update_request: UpdateProfile):
-        user: User = await JWTManager().get_current_user(token, self._session)
+    async def update_profile(self, userId: str, update_request: UpdateProfile):
         return await self._repo.update_profile(
-            user.userId,
+            userId,
             update_request.surname,
             update_request.name,
             update_request.patronymic,
