@@ -45,7 +45,7 @@ class UserRepository(AbstractRepository):
         except Exception as e:
             logger.error(f"Произошла ошибка в UserRepository.", str(e))
     
-    async def delete_by_id(self, id):
+    async def delete_by_id(self, id) -> Result[int]:
         try:
             result = await self._session.execute(delete(self.model).where(self.model.userId == id))
             await self._session.commit()
