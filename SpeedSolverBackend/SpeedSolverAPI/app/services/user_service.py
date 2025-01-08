@@ -27,6 +27,9 @@ class UserService:
         self._session = session
         self._repo: UserRepository = UserRepository(session)
 
+    async def delete_account(self, userId: str):
+        return await self._repo.delete_by_id(userId)
+
     async def get_by_email(self, email: str):
         user = await self._repo.get_by_email(email)
         return success(user) if user else err("Пользователь не найден.")
