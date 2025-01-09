@@ -8,8 +8,8 @@ from app.database.repo.user_profile_repository import UserProfileRepository
 from app.schema.request.get_access import authorize, register
 from app.schema.request.account.updateprofile import UpdateProfile
 
-from app.routing.security.hasher import hash_password, verify_password
-from app.routing.security.jwtmanager import JWTManager
+from app.security.hasher import hash_password, verify_password
+from app.security.jwtmanager import JWTManager
 
 from app.utils.result import Result, err, success
 
@@ -20,10 +20,9 @@ class UserProfileService:
         self._repo: UserProfileRepository = UserProfileRepository(session)
 
 
-    async def update_profile(self, token: str, update_request: UpdateProfile):
-        user: User = await JWTManager().get_current_user(token, self._session)
+    async def update_profile(self, userId: str, update_request: UpdateProfile):
         return await self._repo.update_profile(
-            user.userId,
+            userId,
             update_request.surname,
             update_request.name,
             update_request.patronymic,

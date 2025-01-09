@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import CursorResult, and_, delete, select, update, insert
 
-from app.routing.security.hasher import verify_password
+from app.security.hasher import verify_password
 
 from app.utils.result import *
 from app.utils.logger.telegram_bot.telegram_logger import logger

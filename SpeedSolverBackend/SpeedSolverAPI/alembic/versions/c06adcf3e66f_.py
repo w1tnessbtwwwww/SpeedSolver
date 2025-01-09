@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 26e74bb7d56d
+Revision ID: c06adcf3e66f
 Revises: 
-Create Date: 2024-12-22 16:00:34.382467
+Create Date: 2025-01-09 12:38:12.616311
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '26e74bb7d56d'
+revision: str = 'c06adcf3e66f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,12 +28,6 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['parent_objectiveId'], ['objectives.objectiveId'], ),
     sa.PrimaryKeyConstraint('objectiveId')
     )
-    op.create_table('projects',
-    sa.Column('projectId', sa.UUID(), nullable=False),
-    sa.Column('title', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=True),
-    sa.PrimaryKeyConstraint('projectId')
-    )
     op.create_table('users',
     sa.Column('userId', sa.UUID(), nullable=False),
     sa.Column('email', sa.String(), nullable=True),
@@ -47,9 +41,9 @@ def upgrade() -> None:
     sa.Column('verification_id', sa.UUID(), nullable=False),
     sa.Column('userId', sa.UUID(), nullable=False),
     sa.Column('verification_code', sa.String(), nullable=False),
-    sa.ForeignKeyConstraint(['userId'], ['users.userId'], ),
-    sa.PrimaryKeyConstraint('verification_id'),
-    sa.UniqueConstraint('userId')
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['userId'], ['users.userId'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('verification_id')
     )
     op.create_table('organizations',
     sa.Column('organizationId', sa.UUID(), nullable=False),
@@ -66,7 +60,7 @@ def upgrade() -> None:
     sa.Column('patronymic', sa.String(), nullable=True),
     sa.Column('birthdate', sa.Date(), nullable=True),
     sa.Column('userId', sa.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['userId'], ['users.userId'], ),
+    sa.ForeignKeyConstraint(['userId'], ['users.userId'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('userProfileId')
     )
     op.create_table('teams',
@@ -100,10 +94,11 @@ def upgrade() -> None:
     op.create_table('team_projects',
     sa.Column('teamProjectId', sa.UUID(), nullable=False),
     sa.Column('teamId', sa.UUID(), nullable=False),
-    sa.Column('projectId', sa.UUID(), nullable=False),
-    sa.ForeignKeyConstraint(['projectId'], ['projects.projectId'], ),
+    sa.Column('project_title', sa.String(), nullable=False),
+    sa.Column('project_description', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['teamId'], ['teams.teamId'], ),
-    sa.PrimaryKeyConstraint('teamProjectId')
+    sa.PrimaryKeyConstraint('teamProjectId'),
+    sa.UniqueConstraint('project_title')
     )
     # ### end Alembic commands ###
 
@@ -118,6 +113,5 @@ def downgrade() -> None:
     op.drop_table('organizations')
     op.drop_table('email_verifications')
     op.drop_table('users')
-    op.drop_table('projects')
     op.drop_table('objectives')
     # ### end Alembic commands ###

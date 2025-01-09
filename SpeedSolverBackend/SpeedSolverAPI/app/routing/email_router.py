@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.database.database import get_session
-from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
+from app.security.jwtmanager import JWTManager, oauth2_scheme
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

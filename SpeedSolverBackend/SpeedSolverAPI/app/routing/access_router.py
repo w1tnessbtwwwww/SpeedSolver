@@ -16,9 +16,9 @@ from app.services.verification_service import VerificationService
 from app.utils.result import Result
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code 
 
-from app.routing.security.jwttype import JWTType
-from app.routing.security.jwtmanager import JWTManager, oauth2_scheme
-from app.routing.security.jwtmanager import oauth2_scheme
+from app.security.jwttype import JWTType
+from app.security.jwtmanager import JWTManager, oauth2_scheme
+from app.security.jwtmanager import oauth2_scheme
 
 from app.exc.bad_email import BadEmail
 

@@ -8,7 +8,7 @@ from app.schema.request.organization.update_organization import UpdateOrganizati
 
 from app.services.organization_service import OrganizationService
 
-from app.routing.security.jwtmanager import oauth2_scheme, get_current_user
+from app.security.jwtmanager import oauth2_scheme, get_current_user
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

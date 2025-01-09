@@ -16,9 +16,12 @@ class Objective(Base):
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
     parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.objectiveId"), nullable=True)
-
+    projectId: Mapped[UUID] = mapped_column(UUID, ForeignKey("projects.projectId", ondelete='CASCADE'), nullable=False)
+    
+    project: Mapped["Project"] = relationship("Project", back_populates="objectives")
     parent_objective: Mapped["Objective"] = relationship("Objective", back_populates="child_objectives", remote_side=[objectiveId])
     child_objectives: Mapped[list["Objective"]] = relationship("Objective", back_populates="parent_objective")
+    
 
 
 class Organization(Base):
@@ -35,6 +38,8 @@ class Project(Base):
     projectId: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
+
+    objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="project")
 
 
 class TeamMember(Base):
