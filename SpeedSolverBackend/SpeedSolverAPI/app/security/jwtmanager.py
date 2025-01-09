@@ -16,8 +16,8 @@ from app.database.database import get_session
 
 from app.utils.result import Result, err, success
 
-from app.routing.security.hasher import verify_password
-from app.routing.security.jwttype import JWTType
+from app.security.hasher import verify_password
+from app.security.jwttype import JWTType
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/access/authorize")
 
