@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.routing.security.hasher import verify_password
+from app.security.hasher import verify_password
 from app.utils.result import *
 from ..abstract.abc_repo import AbstractRepository
 from app.database.models.models import UserProfile
