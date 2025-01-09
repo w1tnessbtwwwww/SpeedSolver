@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.routing.security.hasher import verify_password
+from app.security.hasher import verify_password
 
 from app.utils.result import Result, err, success
 from app.utils.logger.telegram_bot.telegram_logger import logger
@@ -45,7 +45,7 @@ class UserRepository(AbstractRepository):
         except Exception as e:
             logger.error(f"Произошла ошибка в UserRepository.", str(e))
     
-    async def delete_by_id(self, id):
+    async def delete_by_id(self, id) -> Result[int]:
         try:
             result = await self._session.execute(delete(self.model).where(self.model.userId == id))
             await self._session.commit()

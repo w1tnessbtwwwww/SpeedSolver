@@ -1,5 +1,6 @@
 from datetime import timedelta
 import datetime
+from typing import Optional
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
@@ -9,22 +10,27 @@ from jwt import encode, decode
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.cfg.settings import settings
+from app.database.models.models import User
 from app.database.repo.user_repository import UserRepository
 from app.database.database import get_session
 
 from app.utils.result import Result, err, success
 
-from app.routing.security.hasher import verify_password
-from app.routing.security.jwttype import JWTType
+from app.security.hasher import verify_password
+from app.security.jwttype import JWTType
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/access/authorize")
 
-async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)):
+async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)) -> User:
     
 
     payload = JWTManager().decode_token(token)
-    if payload.error:
-        return err(payload.error)
+    if not payload.success:
+        raise HTTPException(
+            status_code=401,
+            detail=payload.error,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     
     username: str = payload.value.get("userId")
     if username is None:

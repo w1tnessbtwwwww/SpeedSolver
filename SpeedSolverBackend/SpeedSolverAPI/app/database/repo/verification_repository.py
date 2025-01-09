@@ -15,7 +15,16 @@ from sqlalchemy.exc import IntegrityError
 class VerificationRepository(AbstractRepository):
     model = EmailVerification
 
-    async def resend_verification(self, userId: str, verification_code: str) -> Result[Optional[EmailVerification]]: 
+    async def resend_verification(self, userId: str, verification_code: str) -> Result[Optional[EmailVerification]]:
+
+        clear_query = (
+            delete(self.model)
+            .where(self.model.userId == userId)
+        )
+
+        await self._session.execute(clear_query)
+        await self._session.commit()
+
         try:
             return success(await self.create(userId=userId, verification_code=verification_code))
         except Exception as e:
@@ -39,6 +48,7 @@ class VerificationRepository(AbstractRepository):
 
 
     async def confirm_email(self, userId: str, code: str) -> Result[None]:
+        logger.info(str(datetime.datetime.now()))
         try:
             query = (
                 select(self.model)

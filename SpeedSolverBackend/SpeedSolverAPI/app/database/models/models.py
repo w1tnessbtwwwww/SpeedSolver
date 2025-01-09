@@ -16,9 +16,12 @@ class Objective(Base):
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
     parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.objectiveId"), nullable=True)
-
+    projectId: Mapped[UUID] = mapped_column(UUID, ForeignKey("projects.projectId", ondelete='CASCADE'), nullable=False)
+    
+    project: Mapped["Project"] = relationship("Project", back_populates="objectives")
     parent_objective: Mapped["Objective"] = relationship("Objective", back_populates="child_objectives", remote_side=[objectiveId])
     child_objectives: Mapped[list["Objective"]] = relationship("Objective", back_populates="parent_objective")
+    
 
 
 class Organization(Base):
@@ -35,6 +38,8 @@ class Project(Base):
     projectId: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
+
+    objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="project")
 
 
 class TeamMember(Base):
@@ -78,7 +83,7 @@ class UserProfile(Base):
     name: Mapped[str] = mapped_column(nullable=True)
     patronymic: Mapped[str] = mapped_column(nullable=True)
     birthdate: Mapped[Date] = mapped_column(Date, nullable=True, default=datetime.date.today())
-    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"))
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId", ondelete='CASCADE'))
 
     user: Mapped["User"] = relationship("User", back_populates="profile") # type: ignore
 
@@ -86,7 +91,7 @@ class EmailVerification(Base):
     __tablename__ = "email_verifications"
 
     verification_id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), nullable=False)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId", ondelete='CASCADE'), nullable=False)
 
     verification_code: Mapped[str] = mapped_column(default=str(generate_confirmation_code()))
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
@@ -109,7 +114,7 @@ class User(Base):
     teams_lead: Mapped[List["Team"]] = relationship("Team", back_populates="leader")
 
     team_invitations: Mapped[List["TeamInvitation"]] = relationship("TeamInvitation", back_populates="invited_user", foreign_keys="[TeamInvitation.invited_user_id]", cascade="all, delete-orphan")
-    organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader")
+    organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader", cascade="all, delete-orphan")
     
     verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
 

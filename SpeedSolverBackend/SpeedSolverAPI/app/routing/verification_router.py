@@ -12,7 +12,7 @@ from app.schema.request.email.resend_code import ResendCode
 from app.services.user_service import UserService
 from app.services.verification_service import VerificationService
 
-from app.routing.security.jwtmanager import JWTManager, get_current_user, oauth2_scheme
+from app.security.jwtmanager import JWTManager, get_current_user, oauth2_scheme
 
 verification_router = APIRouter(
     prefix="/verification",
