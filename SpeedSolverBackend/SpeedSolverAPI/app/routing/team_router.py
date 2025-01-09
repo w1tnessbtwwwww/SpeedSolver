@@ -9,7 +9,7 @@ from app.schema.request.team.update_team import UpdateTeam
 from app.schema.request.team.create_team import CreateTeam
 
 from app.services.team_service import TeamService
-from app.routing.security.jwtmanager import JWTManager, oauth2_scheme, get_current_user
+from app.security.jwtmanager import JWTManager, oauth2_scheme, get_current_user
 
 
 team_router = APIRouter(prefix="/team", tags=["Teams management"])

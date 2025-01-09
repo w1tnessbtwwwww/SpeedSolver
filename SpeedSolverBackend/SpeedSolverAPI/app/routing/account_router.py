@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
-from app.routing.security.jwtmanager import get_current_user, oauth2_scheme
+from app.security.jwtmanager import get_current_user, oauth2_scheme
 
 from app.services.user_profile_service import UserProfileService
 from app.services.user_service import UserService

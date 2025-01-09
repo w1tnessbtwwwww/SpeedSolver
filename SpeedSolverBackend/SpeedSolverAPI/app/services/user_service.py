@@ -15,10 +15,10 @@ from app.services.verification_service import VerificationService
 from app.utils.email_service.email_service import EmailService
 from app.utils.result import Result, err, success
 
-from app.routing.security.hasher import hash_password, verify_password
+from app.security.hasher import hash_password, verify_password
 
-from app.routing.security.jwtmanager import JWTManager
-from app.routing.security.jwttype import JWTType
+from app.security.jwtmanager import JWTManager
+from app.security.jwttype import JWTType
 
 
 class UserService:

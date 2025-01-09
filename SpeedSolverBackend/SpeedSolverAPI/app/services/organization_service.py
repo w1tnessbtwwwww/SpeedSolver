@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models.models import Organization, User
 from app.database.repo.organization_repository import OrganizationRepository
 
-from app.routing.security.jwtmanager import JWTManager
+from app.security.jwtmanager import JWTManager
 
 from app.schema.request.organization.create_organization import CreateOrganization
 from app.schema.request.organization.update_organization import UpdateOrganization
