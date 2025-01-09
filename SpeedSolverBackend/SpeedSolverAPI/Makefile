@@ -7,3 +7,5 @@ rev:
 mig:
 	poetry run alembic upgrade head
 
+kill:
+	taskkill /f /im python.exe
