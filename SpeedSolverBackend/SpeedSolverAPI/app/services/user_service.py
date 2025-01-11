@@ -1,5 +1,6 @@
 
 from typing import List, Sequence
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -26,6 +27,11 @@ class UserService:
     def __init__(self, session: AsyncSession):
         self._session = session
         self._repo: UserRepository = UserRepository(session)
+
+
+
+    async def get_moderation_teams(self, userId: str):
+        return await self._repo.get_moderation_teams(userId)
 
     async def delete_account(self, userId: str):
         return await self._repo.delete_by_id(userId)
