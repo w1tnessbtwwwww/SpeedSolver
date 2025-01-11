@@ -6,11 +6,12 @@ from app.routing.organization_router import organization_router
 from app.routing.email_router import email_router
 from app.routing.verification_router import verification_router
 from app.routing.project_router import project_router
-
+from app.routing.test_router import test_router
 main_router = APIRouter (
    prefix = "/v1"
 )
 
+main_router.include_router(test_router)
 main_router.include_router(auth_router)
 main_router.include_router(verification_router)
 main_router.include_router(email_router)
