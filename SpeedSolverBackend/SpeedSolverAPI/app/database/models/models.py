@@ -38,9 +38,18 @@ class Project(Base):
     projectId: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
     objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="project")
 
+class TeamModerator(Base):
+    __tablename__ = "team_moderators"
+    teamModeratorId: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId"))
+    teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.teamId"))
+
+    team: Mapped["Team"] = relationship("Team", back_populates="moderators") # type: ignore
+    user: Mapped["User"] = relationship("User", back_populates="teams_moderation") # type: ignore
 
 class TeamMember(Base):
     __tablename__ = "team_members"
@@ -75,6 +84,8 @@ class Team(Base):
     leader: Mapped["User"] = relationship("User", back_populates="teams_lead")
     members: Mapped[list["TeamMember"]] = relationship("TeamMember", back_populates="team") # type: ignore
     projects: Mapped[list["TeamProject"]] = relationship("TeamProject", back_populates="team") # type: ignore
+
+    moderators: Mapped[list["TeamModerator"]] = relationship("TeamModerator", back_populates="team") # type: ignore
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
@@ -117,6 +128,8 @@ class User(Base):
     organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader", cascade="all, delete-orphan")
     
     verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
+
+    teams_moderation: Mapped["TeamModerator"] = relationship("TeamModerator", back_populates="user")
 
 class TeamInvitation(Base):
     __tablename__ = "team_invitations"
