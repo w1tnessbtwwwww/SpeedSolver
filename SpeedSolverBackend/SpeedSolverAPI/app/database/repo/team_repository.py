@@ -8,6 +8,7 @@ class TeamRepository(AbstractRepository):
     model: Team = Team
 
 
+
     async def create_team(self, 
                           title: str, 
                           description: str, 
