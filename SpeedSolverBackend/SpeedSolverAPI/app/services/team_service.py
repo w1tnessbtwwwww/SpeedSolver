@@ -17,7 +17,7 @@ class TeamService:
         self._session = session
         self._repo = TeamRepository(session)
 
-    
+
     async def is_user_moderator(self, user_id: str, team_id: str):
         team_moderation_repo = TeamModerationRepository(self._session)
         team: Team = await self._repo.get_by_filter_one(teamId=team_id)
@@ -37,7 +37,12 @@ class TeamService:
 
         return True if team else False
 
+    async def get_team_by_project(self, projectId: str):
+        
+        return await self._repo.get_team_by_project(projectId)
+
     async def delete_team(self, team_id: str, leaderId: str):
+        
         return await self._repo.delete_team(teamId=team_id, leaderId=leaderId)
 
     async def create_team(self, createRequest: CreateTeam, leaderId: str):
