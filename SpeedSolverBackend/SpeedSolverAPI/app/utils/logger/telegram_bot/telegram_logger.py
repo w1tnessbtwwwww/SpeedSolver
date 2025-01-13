@@ -26,7 +26,7 @@ class TelegramLogger(Logger):
     def info(self, message: str):
         template = f"❗**INFO**❗\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
-        sending = self.send_log(template)
+        self.send_log(template)
         
 
     def error(self, message: str, traceback: Optional[str] = None) -> str:
@@ -36,16 +36,20 @@ class TelegramLogger(Logger):
         else:
             template = f"🚨 **ERROR** 🚨\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
-        sending = self.send_log(template)
+        self.send_log(template)
         
     def warning(self, message: str) -> str:
         template = f"⚠️ **WARNING** ⚠️\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
         
-        sending = self.send_log(template)
+        self.send_log(template)
         
-    def fatal(self, message: str) -> str:
-        template = f"🆘 **FATAL** 🆘\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
+    def fatal(self, message: str, traceback: str = None) -> str:
         
-        sending = self.send_log(template)
+        if traceback:
+            template = f"🆘 **FATAL** 🆘\n{message}\n```python\n{traceback}```\nDate: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+        else:
+            template = f"🆘 **FATAL** 🆘\n{message}\nDate: {datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")}"
+        
+        self.send_log(template)
 
 logger: TelegramLogger = TelegramLogger()
