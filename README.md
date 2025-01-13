@@ -27,13 +27,14 @@
 
 ## Стек технологий
 
-- **Frontend**: React.js + Tailwind CSS + SweetAlert2
-- **Backend**: Python - FastAPI, Pydantic
-- **Mobile** Swift
-- **Object Relational Mapping**: Python SQLAlchemy + Alembic
+- **Frontend**: React + TypeScript
+- **Backend**: Python - FastAPI, Pydantic, Uvicorn (проксирующийся через nginx)
+- **Object Relational Mapping**: Python SQLAlchemy, Alembic, asyncpg driver
 - **База данных**: PostgreSQL
-- **Аутентификация & Авторизация**: JWT (JSON Web Tokens) - pyjwt/jose
+- **Аутентификация & Авторизация**: JWT (JSON Web Tokens) - pyjwt
 - **Тестирование Backend**: Python - pytest
+- **Мониторинг**: Grafana, Prometheus, Node Exporter, AlertManager
+- **Логирование**: Собственная библиотека [teleglog](https://github.com/w1tnessbtwwwww/teleglog)
 - **Дополнительно**:
    - Docker – контейнеризация приложения.
    - Nginx - Веб-сервер для проксирования внешних подключений путем **reverse proxy**, реализация защищенного соединения с **SSL/TLS**, проксирование поддоменов.
@@ -42,7 +43,7 @@
 ## Установка и запуск
 
 1. Клонируйте репозиторий:
-   ```bash
+   ```shell
    git clone https://github.com/w1tnessbtwwwww/SpeedSolver.git
 2. Необходимо создать файл **.env** и заполнить его из **.env.example**.
 3. Необходимо переназначить порты в файле **.env** в случае, если у вас заняты одни из назначенных вами.
