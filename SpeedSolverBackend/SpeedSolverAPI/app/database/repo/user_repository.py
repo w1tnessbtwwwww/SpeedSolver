@@ -6,13 +6,24 @@ from app.security.hasher import verify_password
 from app.utils.result import Result, err, success
 from app.utils.logger.telegram_bot.telegram_logger import logger
 
-from app.database.models.models import User
+from app.database.models.models import User, TeamModerator
 from app.database.abstract.abc_repo import AbstractRepository
 
 from sqlalchemy import delete, select, update, insert
 
 class UserRepository(AbstractRepository):
     model = User
+
+    async def get_moderation_teams(self, userId: str):
+        query = (
+            select(self.model)
+            .where(self.model.userId == userId)
+            .join(TeamModerator, TeamModerator.userId == self.model.userId)
+        )
+
+        result = await self._session.execute(query)
+        user = result.mappings().all()
+        return user
 
     async def create(self, **kwargs):
         query = insert(self.model).values(**kwargs).returning(self.model)

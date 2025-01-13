@@ -13,8 +13,15 @@ class ProjectService:
         self._repo: ProjectRepository = ProjectRepository(session)
 
 
-    async def create_project(self, team_id: str, title: str, description: str) -> Result[Project]:
-        team = await TeamService(self._session).is_team_exists(team_id)
+    async def create_project(self, user_sender: str, team_id: str, title: str, description: str) -> Result[Project]:
+        team = await TeamService(self._session).is_team_exists(team_id=team_id)
+        if not team:
+            return err("Команда не найдена.")
+        
+        is_user_moderator = await TeamService(self._session).is_user_moderator(user_sender, team_id=team_id)
 
-        return err("Такой команды не найдено.") if not team else success("Команда есть")
+        if not is_user_moderator:
+            return err("Вы не являетесь модератором данной команды.")
+        
+        return await self._repo.create_project(binded_teamId=team_id, title=title, description=description)
     

@@ -11,33 +11,27 @@ class ProjectRepository(AbstractRepository):
 
 
     async def create_project(self, binded_teamId: str, title: str, description: str) -> Result[Project]:
-
-        team_project_repository = TeamProjectRepository(self._session)
-
+        team_project_repo = TeamProjectRepository(self._session)
+        team_projects = await team_project_repo.get_by_filter_all(teamId=binded_teamId)
 
         project_query = (
             select(self.model)
             .where(
-                and_(
-                    self.model.title == title,
-                    self.model.description == description
-                )
+                self.model.projectId.in_([team_project.projectId for team_project in team_projects])
             )
         )
 
-        project_result = await self._session.execute(project_query)
-        projects = project_result.scalars().all()
+        project = await self._session.execute(project_query)
+        project = project.scalars().one_or_none()
 
+        if project:
+            return err("Проект с таким названием уже существует.")
 
-        team_projects_query = (
-            select(team_project_repository.model)
-            .where(
-                team_project_repository.model.teamId == binded_teamId
-            )
-        )
+        project = await self.create(title=title, description=description)
 
-        team_projects_result = await self._session.execute(team_projects_query)
-        team_projects = team_projects_result.scalars().all()
+        created = await team_project_repo.create(teamId=binded_teamId, projectId=project.projectId)
+        return success(created)
+
 
 
         

@@ -11,8 +11,13 @@ from app.services.project_service import ProjectService
 
 project_router = APIRouter(
     prefix="/projects",
+    tags=["Projects Management"]
 )
 
 @project_router.post("/create")
 async def create_project(create_project: CreateProject, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    creating = await ProjectService(session).create_project(create_project.for_team, create_project.title, create_project.description)
+    creating = await ProjectService(session).create_project(user.userId, create_project.for_team, create_project.title, create_project.description)
+    if not creating.success:
+        raise HTTPException(status_code=400, detail=creating.error)
+    
+    return creating.value
