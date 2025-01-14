@@ -26,4 +26,7 @@ async def create_project(create_project: CreateProject, user: User = Depends(get
 @project_router.put("/update")
 async def update_project(project_id: str, update_project: UpdateProject, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     updating = await ProjectService(session).update_project(user.userId, project_id, update_project)
-    return updating
+    if not updating.success:
+        raise HTTPException(status_code=400, detail=updating.error)
+    
+    return updating.value
