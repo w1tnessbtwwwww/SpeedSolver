@@ -8,6 +8,7 @@ from app.database.repo.team_projects_repository import TeamProjectRepository
 from app.schema.request.project.create_project import CreateProject
 from app.schema.request.project.update_project import UpdateProject
 
+from app.services.team_projects_service import TeamProjectService
 from app.services.team_service import TeamService
 
 from app.utils.result import Result, err, success
@@ -19,7 +20,7 @@ class ProjectService:
         self._session = session
         self._repo: ProjectRepository = ProjectRepository(session)
 
-
+    
 
     async def can_interract_with_team(self, userId: str, teamId: str) -> Result[bool]:
         team = await TeamService(self._session).is_team_exists(team_id=teamId)
@@ -39,8 +40,8 @@ class ProjectService:
         return await self._repo.create_project(binded_teamId=team_id, title=createProject.title, description=createProject.description)
     
     async def update_project(self, user_sender: str, projectId: str, updateProject: UpdateProject):
-        team_projects_repo = TeamProjectRepository(self._session)
-        team = await team_projects_repo.get_team_by_project(projectId)
+        team_project_service = TeamProjectService(self._session)
+        team = await team_project_service.get_team_by_project(projectId)
         if not team.success:
             return err(team.error)
         
@@ -54,4 +55,3 @@ class ProjectService:
         
         await self._session.commit()
         return success(upd_proj)
-
