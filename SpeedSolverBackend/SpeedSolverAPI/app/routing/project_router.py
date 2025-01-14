@@ -30,3 +30,15 @@ async def update_project(project_id: str, update_project: UpdateProject, user: U
         raise HTTPException(status_code=400, detail=updating.error)
     
     return updating.value
+
+@project_router.get("/tasks/all")
+async def get_all_tasks(project_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    tasks = await ProjectService(session).get_all_tasks(user.userId, project_id)
+    if not tasks.success:
+        raise HTTPException(status_code=400, detail=tasks.error)
+    
+    return tasks.value
+
+@project_router.post("/tasks/create")
+async def create_task(project_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    raise HTTPException(status_code=400, detail="Not implemented")
