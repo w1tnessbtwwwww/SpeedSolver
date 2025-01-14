@@ -47,7 +47,6 @@ async def bad_email(request, exc: BadEmail):
         detail=exc.message
     )
 
-
 @api.on_event("startup")
 async def startup_event():
     await create_tables()
