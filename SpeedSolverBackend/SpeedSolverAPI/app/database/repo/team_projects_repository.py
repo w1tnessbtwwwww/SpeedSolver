@@ -10,10 +10,12 @@ class TeamProjectRepository(AbstractRepository):
         try:
             query = (
                 select(Team)
-                .join(TeamProject, TeamProject.projectId == projectId)
+                .select_from(self.model)
+                .where(self.model.projectId == projectId)
+                .join(Team, Team.teamId == self.model.teamId)
             )
             team = await self._session.execute(query)
-            teamProject = team.scalars().all()
+            teamProject = team.scalars().first()
             return success(teamProject)
         except Exception as e:
             return err(str(e))
