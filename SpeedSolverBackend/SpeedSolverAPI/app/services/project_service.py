@@ -21,7 +21,6 @@ class ProjectService:
 
 
 
-    @dispatch
     async def can_interract_with_team(self, userId: str, teamId: str) -> Result[bool]:
         team = await TeamService(self._session).is_team_exists(team_id=teamId)
         if not team:
@@ -45,4 +44,14 @@ class ProjectService:
         if not team.success:
             return err(team.error)
         
-        return team.value
+        is_user_moder = await self.can_interract_with_team(user_sender, team.value.teamId)
+        if not is_user_moder:
+            return err("Вы не являетесь модератором данной команды.")
+        
+        upd_proj = await self._repo.update_project(projectId=projectId, new_title=updateProject.new_title, new_desc=updateProject.new_description)
+        if not upd_proj:
+            return err("Не удалось обновить команду")
+        
+        await self._session.commit()
+        return success(upd_proj)
+
