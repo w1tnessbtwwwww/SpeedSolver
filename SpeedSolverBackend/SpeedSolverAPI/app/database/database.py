@@ -30,5 +30,6 @@ async def create_tables():
         engine = await get_engine()
         async with engine.begin() as eng:
             await eng.run_sync(Base.metadata.create_all)
+            print("migration successfully")
     except Exception as e:
         logger.fatal("Не удалось создать таблицы. ", str(e))
