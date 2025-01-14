@@ -38,7 +38,6 @@ class TeamService:
         return True if team else False
 
     async def get_team_by_project(self, projectId: str):
-        
         return await self._repo.get_team_by_project(projectId)
 
     async def delete_team(self, team_id: str, leaderId: str):
