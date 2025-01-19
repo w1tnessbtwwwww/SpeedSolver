@@ -26,6 +26,9 @@ class Objective(Base):
         default=datetime.datetime.now() + datetime.timedelta(days=7),
     )
 
+    author_id: Mapped[UUID] = mapped_column(ForeignKey("users.userId"), nullable=False)
+    author: Mapped["User"] = relationship("User", back_populates="authored_objectives")
+
     project: Mapped["Project"] = relationship("Project", back_populates="objectives")
     parent_objective: Mapped["Objective"] = relationship("Objective", back_populates="child_objectives", remote_side=[objectiveId])
     child_objectives: Mapped[list["Objective"]] = relationship("Objective", back_populates="parent_objective")
@@ -112,7 +115,7 @@ class UserProfile(Base):
     about: Mapped[str] = mapped_column(nullable=True)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId", ondelete='CASCADE'))
 
-    user: Mapped["User"] = relationship("User", back_populates="profile", cascade='all, delete-orphan') # type: ignore
+    user: Mapped["User"] = relationship("User", back_populates="profile") # type: ignore
 
 class EmailVerification(Base):
     __tablename__ = "email_verifications"
@@ -134,7 +137,7 @@ class User(Base):
     is_mail_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
 
-    profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user", cascade="all, delete-orphan") # type: ignore
+    profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user") # type: ignore
 
     teams: Mapped[List["TeamMember"]] = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan") # type: ignore
     teams_lead: Mapped[List["Team"]] = relationship("Team", back_populates="leader")
@@ -144,9 +147,11 @@ class User(Base):
     
     verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
 
-    teams_moderation: Mapped["TeamModerator"] = relationship("TeamModerator", back_populates="user")
+    teams_moderation: Mapped[List["TeamModerator"]] = relationship("TeamModerator", back_populates="user")
     
-    projects_moderation: Mapped["ProjectModerator"] = relationship("ProjectModerator", back_populates="user")
+    projects_moderation: Mapped[List["ProjectModerator"]] = relationship("ProjectModerator", back_populates="user")
+
+    authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author")
 
 class TeamInvitation(Base):
     __tablename__ = "team_invitations"
