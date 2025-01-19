@@ -9,12 +9,9 @@ class TeamProjectService:
 
     def __init__(self, session: AsyncSession):
         self._session = session
-        self._repo = TeamProjectRepository()
+        self._repo = TeamProjectRepository(session)
 
     async def get_team_by_project(self, projectId: str) -> Result[Team]:
-        team = await self._repo.get_team_by_project(projectId)
-        if not team:
-            return err("У команды нет такого проекта")
+        return await self._repo.get_team_by_project(projectId)
         
-        return success(team)
     
