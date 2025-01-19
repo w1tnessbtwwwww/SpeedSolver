@@ -32,7 +32,7 @@ class TeamService:
         return success(True)
         
         
-    async def is_user_moderator(self, user_id: str, team_id: str):
+    async def is_user_moderator(self, user_id: str, team_id: str) -> bool:
         team_moderation_repo = TeamModerationRepository(self._session)
         team: Team = await self._repo.get_by_filter_one(teamId=team_id)
         if not team:
