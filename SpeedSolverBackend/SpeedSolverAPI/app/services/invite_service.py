@@ -23,3 +23,13 @@ class InviteService:
         
     async def get_all_invites(self, user_id: str):
         return await self._repo.get_all_invites(user_id=user_id)
+    
+    async def get_all_invited_users(self, sender_id: str, team_id: str):
+        
+        team_service = TeamService(self._session)
+
+        if not await team_service.is_user_moderator(sender_id, team_id):
+            return err("Вы не являетесь модератором данной команды.")
+        
+        return await self._repo.get_all_invited_users(team_id=team_id)
+        
