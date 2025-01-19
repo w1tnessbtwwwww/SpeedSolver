@@ -11,18 +11,7 @@ from app.utils.result import err
 class ObjectiveRepository(AbstractRepository):
     model = Objective
 
-    async def is_project_moderator(self, projectId: str, userId: str):
-        project_moderator = await ProjectModeratorRepository(self._session).get_by_filter_one(
-            projectId=projectId, userId=userId
-        )
+    
 
-        team_project_service = TeamProjectService(self._session)
-
-        project_service = ProjectService(self._session)
-        team = await team_project_service.get_team_by_project(projectId)
-        if not team.success:
-            return err(team.error)
         
-
-        return True if (project_moderator or await project_service.can_interract_with_team(userId, team.value.teamId)) else False
         
