@@ -49,3 +49,14 @@ async def decline_invite(user: User = Depends(get_current_user), session: AsyncS
         status_code=400,
         detail="Not implemented"
     )
+
+@inviting_router.get("/getallteaminvites")
+async def get_all_invited_users(team_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    invited_users = await InviteService(session).get_all_invited_users(user.userId, team_id)
+    if not invited_users.success:
+        raise HTTPException(
+            status_code=400,
+            detail=invited_users.error
+        )
+    
+    return invited_users.value
