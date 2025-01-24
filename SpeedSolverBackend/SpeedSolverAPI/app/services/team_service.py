@@ -11,6 +11,7 @@ from app.security.jwtmanager import JWTManager
 from app.schema.request.team.create_team import CreateTeam
 from app.schema.request.team.update_team import UpdateTeam
 from app.services.user_service import UserService
+from app.utils.result import Result, err, success
 
 class TeamService:
     def __init__(self, session: AsyncSession):
@@ -18,7 +19,20 @@ class TeamService:
         self._repo = TeamRepository(session)
 
 
-    async def is_user_moderator(self, user_id: str, team_id: str):
+    async def can_interract_with_team(self, userId: str, teamId: str) -> Result[bool]:
+        team = await self.is_team_exists(team_id=teamId)
+        if not team:
+            return err("Команда не найдена.")
+        
+        is_user_moderator = await self.is_user_moderator(userId, teamId)
+
+        if not is_user_moderator:
+            return err("Вы не являетесь модератором данной команды.")
+        
+        return success(True)
+        
+        
+    async def is_user_moderator(self, user_id: str, team_id: str) -> bool:
         team_moderation_repo = TeamModerationRepository(self._session)
         team: Team = await self._repo.get_by_filter_one(teamId=team_id)
         if not team:
@@ -38,7 +52,6 @@ class TeamService:
         return True if team else False
 
     async def get_team_by_project(self, projectId: str):
-        
         return await self._repo.get_team_by_project(projectId)
 
     async def delete_team(self, team_id: str, leaderId: str):
