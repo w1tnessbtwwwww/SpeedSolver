@@ -25,7 +25,7 @@ async def create_team(createRequest: CreateTeam, user: User = Depends(get_curren
     return creating.value
 
 @team_router.put("/update")
-async def update_team(team_id: str,updateRequest: UpdateTeam, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+async def update_team(team_id: str, updateRequest: UpdateTeam, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     updating = await TeamService(session).update_team(updateRequest, user.userId, team_id)
     if not updating.success:
         raise HTTPException(status_code=400, detail=updating.error)
