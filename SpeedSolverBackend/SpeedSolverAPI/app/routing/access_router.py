@@ -17,7 +17,7 @@ from app.utils.result import Result
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code 
 
 from app.security.jwttype import JWTType
-from app.security.jwtmanager import JWTManager, oauth2_scheme
+from app.security.jwtmanager import JWTManager, get_current_user, oauth2_scheme
 from app.security.jwtmanager import oauth2_scheme
 
 from app.exc.bad_email import BadEmail
@@ -40,6 +40,7 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
 
 @auth_router.post("/authorize")
 async def authorize(username: str = Form(), password: str = Form(), session: AsyncSession = Depends(get_session)):
+    
     user = await UserRepository(session).get_by_filter_one(email=username)
     if not user:
         raise HTTPException(status_code=401, detail="Пользователь не найден")
@@ -54,7 +55,6 @@ async def authorize(username: str = Form(), password: str = Form(), session: Asy
         access_token=access_token,
         refresh_token=refresh_token,
         token_type="Bearer"
-        
     )
 
 
