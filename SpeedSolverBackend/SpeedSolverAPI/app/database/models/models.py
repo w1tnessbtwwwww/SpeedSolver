@@ -123,7 +123,7 @@ class EmailVerification(Base):
     verification_id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.userId", ondelete='CASCADE'), nullable=False)
     verification_code: Mapped[str] = mapped_column(default=str(generate_confirmation_code()))
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
+    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow())
 
     user: Mapped["User"] = relationship("User", back_populates="verification")
     
