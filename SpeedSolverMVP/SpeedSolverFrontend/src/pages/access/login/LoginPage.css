@@ -1,0 +1,24 @@
+
+
+
+.multipart-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 60px;
+    border: 2px solid pink;
+    background-color: #AB0EFF;
+    opacity: 0.2;
+    border-radius: 15px;
+}
+
+.login-form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}

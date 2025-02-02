@@ -15,6 +15,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    gap: 90px;
 }
 
 .button_container {
@@ -27,4 +28,11 @@
     color: white;
     margin-bottom: 300px;
     font-size: 70px;
+}
+
+@media (max-width: 320px), (max-width: 480px), (max-width: 600px) {
+    .button_container {
+        flex-direction: column;
+        gap: 30px;
+    }
 }

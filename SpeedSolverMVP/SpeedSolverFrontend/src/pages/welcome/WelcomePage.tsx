@@ -1,23 +1,25 @@
-import "../../swalfire.css"
 import 'react-toastify/dist/ReactToastify.css';
 import styles from "./WelcomePage.module.css"
+import "../../anystyles/speedsolveruikit.css"
 import { PrimaryButton } from "../../components/primaryButton/PrimaryButton";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const WelcomePage = () => {
 
     return (
         <div className={styles.container}>
 
-            <h1 className={styles.title_text}>SpeedSolver</h1>
+            <h1 className="mediaHeader">SpeedSolver</h1>
             
             <div className={styles.button_container}>
-                <PrimaryButton text="Войти" onClick={() => {
-                    console.log("sign in")
-                }}/>
+                <Link to="/login">
+                    <PrimaryButton text="Войти" />
+                </Link>
+                
 
                 <PrimaryButton text="Зарегистрироваться" onClick={() => {
-                    toast.success("пора спать")
+                    
                 }}/>
             </div>
             <ToastContainer />
