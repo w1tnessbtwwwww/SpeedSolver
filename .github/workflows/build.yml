@@ -17,10 +17,15 @@ jobs:
       - name: Downloading repository
         uses: actions/checkout@v4
 
-      - name: Copy .env file
+      - name: Copy .env backend file
         run: |
           cd SpeedSolverBackend/SpeedSolverAPI
           echo "${{ secrets.ENV_SPEEDSOLVER }}" > .env
+
+      - name: Copy .env frontend file
+        run: |
+          cd SpeedSolverMVP/SpeedSolverFrontend
+          echo "${{ secrets.ENV_SPEEDSOLVER_FRONTEND }}" > .env
 
       - name: Run Backend
         run: |

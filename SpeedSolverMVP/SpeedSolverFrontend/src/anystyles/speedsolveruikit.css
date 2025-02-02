@@ -4,11 +4,19 @@
 .defaultInput {
     font-family: 'Inter';
     padding: 10px 20px;
+    color: white;
+    background-color: black;
     border: 2px solid #ccc;
-    border-radius: 25px; /* Закругление углов */
+    border-radius: 12px; /* Закругление углов */
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s ease;
+}
+
+.mediaHeader {
+    font-family: 'Inter', sans-serif;
+    color: white;
+    font-size: 50px;
 }
 
 .mediaText {
@@ -16,7 +24,7 @@
 }
 
 .defaultInput:focus {
-    border-color: #007bff; /* Цвет границы при фокусе */
+    border-color: gray; /* Цвет границы при фокусе */
 }
   
 .defaultInput::placeholder {
@@ -28,6 +36,11 @@
 
     .mediaText {
         hyphens: auto;
+    }
+
+    .mediaHeader {
+        hyphens: auto;
+        font-size: 30px;
     }
 
     .defaultInput {

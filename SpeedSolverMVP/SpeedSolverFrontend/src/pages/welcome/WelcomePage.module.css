@@ -1,51 +1,46 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+* {
+    font-family: "Inter", sans-serif;
+}
+
+
+.welcome-text {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
 
 .container {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     height: 100vh;
     background-image: url("../../assets/mainbackground.svg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    gap: 90px;
 }
 
-.contentButtons {
+.button_container {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 20px;
+    justify-content: center;
+    gap: 70px;
 }
 
-.title {
-    color: #585555;
-}
-
-p {
-    hyphens: auto;
-    color: #808080;
-}
-
-.description {
-    font-family: 'Inter';
-    text-align: center;
-    width: 70vh;
+.title_text {
+    color: white;
+    margin-bottom: 300px;
+    font-size: 70px;
 }
 
 @media (max-width: 320px), (max-width: 480px), (max-width: 600px) {
-    .container {
-        background-image: url("../../assets/mobile_background.svg");
-    }
-
-    .contentButtons {
+    .button_container {
         flex-direction: column;
-    }
-
-    .description {
-        width: 100%;
+        gap: 30px;
     }
 }
