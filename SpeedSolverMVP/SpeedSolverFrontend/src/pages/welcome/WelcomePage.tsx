@@ -4,13 +4,17 @@ import "../../anystyles/speedsolveruikit.css"
 import { PrimaryButton } from "../../components/primaryButton/PrimaryButton";
 import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
+import AnimatedText from '../../components/swappingText/SwappingText';
 
 const WelcomePage = () => {
 
     return (
         <div className={styles.container}>
-
-            <h1 className="mediaHeader">SpeedSolver</h1>
+            
+            <div className="welcome-text">
+                <h1 className="mediaHeader">SpeedSolver</h1>
+                <AnimatedText />
+            </div>
             
             <div className={styles.button_container}>
                 <Link to="/login">
