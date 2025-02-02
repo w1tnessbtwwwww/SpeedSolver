@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const client = axios.create({
-    baseURL: import.meta.env.VITE_SPEEDSOLVER_LOCAL_API_URL
+    baseURL: import.meta.env.VITE_SPEEDSOLVER_DEPLOY_API_URL
 })
 
 export const authorize = (username: string, password: string) => {
