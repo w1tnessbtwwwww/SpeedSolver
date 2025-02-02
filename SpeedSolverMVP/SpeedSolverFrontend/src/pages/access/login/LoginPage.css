@@ -6,9 +6,9 @@
     flex-direction: column;
     gap: 15px;
     padding: 60px;
-    border: 2px solid pink;
-    background-color: #AB0EFF;
-    opacity: 0.2;
+    width: 400px;
+    border: 2px solid darkviolet;
+    background-color: black;
     border-radius: 15px;
 }
 
@@ -21,4 +21,8 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.button-auth {
+    width: auto;
 }
