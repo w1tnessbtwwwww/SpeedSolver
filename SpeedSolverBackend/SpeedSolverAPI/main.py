@@ -29,7 +29,9 @@ api = FastAPI(
 api.add_middleware (
     CORSMiddleware,
     allow_origins=[
-        "https://speedsolver.ru"
+        "http://localhost",
+        "https://speedsolver.ru",
+        "http://localhost:3001"
     ],
     allow_credentials=True,
     allow_methods=["*"],

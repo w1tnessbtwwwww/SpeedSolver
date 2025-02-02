@@ -1,13 +1,11 @@
 import { Route, Routes } from "react-router-dom"
 import WelcomePage from "./pages/welcome/WelcomePage"
-import AccessPage from "./pages/access/AccessPage"
-import AuthorizationType from "./types/enums/AuthorizationType"
+import { LoginPage } from "./pages/access/login/LoginPage"
 function App() {
   return (
     <Routes>
       <Route path="/" element={<WelcomePage />} />
-      <Route path="/login" element={<AccessPage action={AuthorizationType.LOGIN} />} />
-      <Route path="/register" element={<AccessPage action={AuthorizationType.REGISTER}/>}/>
+      <Route path="/login" element={<LoginPage />} />
     </Routes>  
   )
 }

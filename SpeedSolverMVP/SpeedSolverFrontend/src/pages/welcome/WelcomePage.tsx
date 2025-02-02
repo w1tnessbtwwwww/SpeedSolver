@@ -1,26 +1,32 @@
-import PrimaryButton from "../../components/primaryButton/PrimaryButton"
-import styles from "./WelcomePage.module.css"
-import "../../swalfire.css"
 import 'react-toastify/dist/ReactToastify.css';
+import styles from "./WelcomePage.module.css"
+import "../../anystyles/speedsolveruikit.css"
+import { PrimaryButton } from "../../components/primaryButton/PrimaryButton";
+import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
+import AnimatedText from '../../components/swappingText/SwappingText';
+
 const WelcomePage = () => {
 
     return (
         <div className={styles.container}>
-
-            <div className={styles.description}>
-                <h1 className={styles.title}>SpeedSolver</h1>
-                <p>SPEEDSOLVER — это система управления проектами, предназначенная для эффективного управления командами, проектами, задачами, подзадачами и дедлайнами. Проект помогает командам организовать свою работу, отслеживать прогресс и достигать поставленных целей в срок.</p>
+            
+            <div className="welcome-text">
+                <h1 className="mediaHeader">SpeedSolver</h1>
+                <AnimatedText />
             </div>
-
-            <div className={styles.contentButtons}>
+            
+            <div className={styles.button_container}>
                 <Link to="/login">
-                    <PrimaryButton text="Авторизоваться"/>
+                    <PrimaryButton text="Войти" />
                 </Link>
-                <Link to="/register">
-                    <PrimaryButton text="Зарегистрироваться"/>
-                </Link>
+                
+
+                <PrimaryButton text="Зарегистрироваться" onClick={() => {
+                    
+                }}/>
             </div>
+            <ToastContainer />
         </div>
     )
 }

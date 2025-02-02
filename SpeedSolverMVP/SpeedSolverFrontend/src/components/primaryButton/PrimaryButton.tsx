@@ -1,14 +1,16 @@
 import React from "react"
-import styles from "./PrimaryButton.module.css"
-import ButtonProps from "../../types/buttonProps"
-const PrimaryButton: React.FC<ButtonProps> = ({ text, onClick }) => {
+import "./PrimaryButton.css"
 
+interface PrimaryButtonProps {
+    text: string;
+    onClick?: () => void;
+    className?: string;
+  }
+
+export const PrimaryButton: React.FC<PrimaryButtonProps> = ({ text, onClick, className }) => {
     return (
-        <button onClick={onClick} className={styles.primaryButton}>
-            {text}
-        </button>
-    )
-
-} 
-
-export default PrimaryButton
+      <button className={`primaryButton ${className || ''}`} onClick={onClick}>
+        {text}
+      </button>
+    );
+  };
