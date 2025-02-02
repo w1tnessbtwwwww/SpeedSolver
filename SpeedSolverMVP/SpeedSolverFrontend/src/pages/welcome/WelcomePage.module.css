@@ -5,6 +5,14 @@
     font-family: "Inter", sans-serif;
 }
 
+
+.welcome-text {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
 .container {
     display: flex;
     flex-direction: column;
