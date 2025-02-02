@@ -24,7 +24,7 @@
 }
 
 .defaultInput:focus {
-    border-color: #007bff; /* Цвет границы при фокусе */
+    border-color: gray; /* Цвет границы при фокусе */
 }
   
 .defaultInput::placeholder {
