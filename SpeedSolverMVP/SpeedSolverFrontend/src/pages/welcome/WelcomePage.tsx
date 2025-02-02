@@ -2,7 +2,7 @@ import "../../swalfire.css"
 import 'react-toastify/dist/ReactToastify.css';
 import styles from "./WelcomePage.module.css"
 import { PrimaryButton } from "../../components/primaryButton/PrimaryButton";
-import { ToastContainer,  } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 const WelcomePage = () => {
 
@@ -17,7 +17,7 @@ const WelcomePage = () => {
                 }}/>
 
                 <PrimaryButton text="Зарегистрироваться" onClick={() => {
-                    
+                    toast.success("пора спать")
                 }}/>
             </div>
             <ToastContainer />
