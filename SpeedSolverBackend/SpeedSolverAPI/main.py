@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse as Redirect
 from pydantic import BaseModel
 
 from app.cfg.settings import settings
@@ -37,6 +38,10 @@ api.add_middleware (
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+@api.get("/", include_in_schema=False)
+async def redirect_to_docs():
+    return Redirect(url="/docs")
 
 
 api.include_router(main_router)
