@@ -40,7 +40,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSe
         headers={"WWW-Authenticate": "Bearer"},
     )
     
-    user = await UserRepository(session).get_by_filter_one(userId=username)
+    user = await UserRepository(session).get_by_filter_one(id=username)
     if user is None:
         raise HTTPException(
             status_code=401,

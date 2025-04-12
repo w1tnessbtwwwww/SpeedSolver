@@ -56,26 +56,26 @@ async def authorize(
         raise HTTPException(status_code=401, detail=authorized.error)
     
     jwt_manager = JWTManager()
-    access_token = jwt_manager.encode_token({ "userId": str(user.userId) }, token_type=JWTType.ACCESS)
-    refresh_token = jwt_manager.encode_token({ "userId": str(user.userId) }, token_type=JWTType.REFRESH)
+    access_token = jwt_manager.encode_token({ "userId": str(user.id) }, token_type=JWTType.ACCESS)
+    refresh_token = jwt_manager.encode_token({ "userId": str(user.id) }, token_type=JWTType.REFRESH)
     
     access_token_expires = (datetime.now(tz=timezone.utc) + timedelta(minutes=settings.JWT_ACCESS_TOKEN_LIFETIME_MINUTES)).strftime("%a, %d-%b-%Y %H:%M:%S GMT")
-    refresh_token_expires = (datetime.now(tz=timezone.utc) + timedelta(days=settings.JWT_REFRESH_TOKEN_LIFETIME_DAYS)).strftime("%a, %d-%b-%Y %H:%M:%S GMT")
+    refresh_token_expires = (datetime.now(tz=timezone.utc) + timedelta(days=settings.JWT_REFRESH_TOKEN_LIFETIME_HOURS)).strftime("%a, %d-%b-%Y %H:%M:%S GMT")
 
-    access_token = (
+    access_token_cookie = (
         f"access_token={access_token};"
         f" Expires={access_token_expires};"
         " HttpOnly; Path=/; Secure; SameSite=None; Partitioned"
     )
 
-    access_token = (
-        f"access_token={refresh_token};"
+    refresh_token_cookie = (
+        f"refresh_token={refresh_token};"
         f" Expires={refresh_token_expires};"
         " HttpOnly; Path=/; Secure; SameSite=None; Partitioned"
     )
 
-    response.headers.append("Set-Cookie", access_token)
-    response.headers.append("Set-Cookie", refresh_token)
+    response.headers.append("Set-Cookie", access_token_cookie)
+    response.headers.append("Set-Cookie", refresh_token_cookie)
 
     return AccessToken(
         access_token=access_token,

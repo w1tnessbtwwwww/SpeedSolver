@@ -148,7 +148,6 @@ class User(Base):
     verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
 
     teams_moderation: Mapped[List["TeamModerator"]] = relationship("TeamModerator", back_populates="user")
-    
     projects_moderation: Mapped[List["ProjectModerator"]] = relationship("ProjectModerator", back_populates="user")
 
     authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author")

@@ -17,8 +17,8 @@ class AbstractRepository(ABC):
             await self._session.rollback()
             raise e
 
-    def rollback(self):
-        self._session.rollback()
+    async def rollback(self):
+        await self._session.rollback()
 
     async def get_by_id(self, id):
         return await self._session.get(self.model, id)
@@ -41,6 +41,12 @@ class AbstractRepository(ABC):
         query = select(self.model).filter_by(**kwargs)
         result = await self._session.execute(query)
         return result.scalars().all()
+    
+    async def update_by_id(self, id, **kwargs):
+        query = update(self.model).where(self.model.id == id).values(**kwargs).returning(self.model)
+        result = await self._session.execute(query)
+        await self.commit()
+        return result.scalars().first()
 
     async def get_by_filter_one(self, **kwargs):
         query = select(self.model).filter_by(**kwargs)

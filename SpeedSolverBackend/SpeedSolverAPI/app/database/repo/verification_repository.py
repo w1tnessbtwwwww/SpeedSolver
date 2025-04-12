@@ -19,14 +19,14 @@ class VerificationRepository(AbstractRepository):
 
         clear_query = (
             delete(self.model)
-            .where(self.model.userId == userId)
+            .where(self.model.id == userId)
         )
 
         await self._session.execute(clear_query)
         await self._session.commit()
 
         try:
-            return success(await self.create(userId=userId, verification_code=verification_code))
+            return success(await self.create(id=userId, verification_code=verification_code))
         except Exception as e:
             logger.error("Произшла ошибка в репозитории верификации.")
             return err("Произошла ошибка. Информация уже направлена разработчику")
@@ -41,7 +41,7 @@ class VerificationRepository(AbstractRepository):
         result = await self._session.execute(last_verification_query)
         last_verification = result.scalars().first()
         if not last_verification:
-            verification = await self.create(userId=userId, verification_code=verification_code)
+            verification = await self.create(id=userId, verification_code=verification_code)
             return success(verification)
         
         return err("Верификация уже была пройдена.")
@@ -75,7 +75,7 @@ class VerificationRepository(AbstractRepository):
     async def delete_by_id(self, id) -> Result[int]:
         try:
             result = await self._session.execute(
-                delete(self.model).where(self.model.userId == id)
+                delete(self.model).where(self.model.id == id)
             )
             await self._session.commit()
             return success(result.rowcount)
