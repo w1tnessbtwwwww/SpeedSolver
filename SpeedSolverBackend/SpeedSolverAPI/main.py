@@ -30,8 +30,9 @@ api.add_middleware (
     CORSMiddleware,
     allow_origins=[
         "http://localhost",
-        "https://speedsolver.ru",
         "http://localhost:3001"
+        "https://speedsolver.ru",
+        "http://speedsolver.ru"
     ],
     allow_credentials=True,
     allow_methods=["*"],
