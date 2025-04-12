@@ -3,8 +3,7 @@ import "../../../anystyles/centeredContainer.css"
 import "../../../anystyles/speedsolveruikit.css"
 import { PrimaryButton } from "../../../components/primaryButton/PrimaryButton"
 import { useState } from "react"
-import { register } from "../../../app/axios_api"
-import { toast, ToastContainer } from "react-toastify"
+import { ToastContainer } from "react-toastify"
 
 
 
@@ -14,6 +13,7 @@ export const RegisterPage: React.FC = () => {
         username: "",
         password: ""
     })
+
 
     return ( 
         <div className="register-page centered baseBackground">
@@ -28,7 +28,7 @@ export const RegisterPage: React.FC = () => {
                         setRegisterForm({...registerForm, password: e.target.value})
                     }}>
                     </input>
-                    
+
                     <PrimaryButton text="Зарегистрироваться" className="button-auth" onClick={() => {
                         
                     }}/>
