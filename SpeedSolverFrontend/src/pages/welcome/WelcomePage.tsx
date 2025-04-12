@@ -21,10 +21,10 @@ const WelcomePage = () => {
                     <PrimaryButton text="Войти" />
                 </Link>
                 
-
-                <PrimaryButton text="Зарегистрироваться" onClick={() => {
-                    
-                }}/>
+                <Link to="/register">
+                    <PrimaryButton text="Зарегистрироваться"/>
+                </Link>
+                
             </div>
             <ToastContainer />
         </div>
