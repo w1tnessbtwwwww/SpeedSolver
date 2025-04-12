@@ -24,7 +24,7 @@ jobs:
 
       - name: Copy .env frontend file
         run: |
-          cd SpeedSolverMVP/SpeedSolverFrontend
+          cd SpeedSolverFrontend
           echo "${{ secrets.ENV_SPEEDSOLVER_FRONTEND }}" > .env
 
       - name: Run Backend
