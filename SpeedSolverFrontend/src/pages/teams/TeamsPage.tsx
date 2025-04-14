@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import "../../anystyles/centeredContainer.css"
 import { Team } from "../../types/teams/types"
 import { get_all_teams } from "../../app/axios_api"
 import { TeamsList } from "../../components/teamslist/TeamsList"

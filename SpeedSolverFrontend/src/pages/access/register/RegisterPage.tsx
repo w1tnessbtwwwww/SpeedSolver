@@ -1,40 +1,38 @@
-
-import "../../../anystyles/centeredContainer.css"
-import "../../../anystyles/speedsolveruikit.css"
-import { PrimaryButton } from "../../../components/primaryButton/PrimaryButton"
-import { useState } from "react"
+import { useRef } from "react"
 import { ToastContainer } from "react-toastify"
-
-
+import PasswordInput from "@/components/passwordInput/PasswordInput"
 
 export const RegisterPage: React.FC = () => {
+    const loginInput = useRef<HTMLInputElement>(null);
 
-    const [registerForm, setRegisterForm] = useState({
-        username: "",
-        password: ""
-    })
-
+    const handleRegister = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        const loginValue = loginInput.current?.value;
+        console.log("Введённый логин:", loginValue);
+    };
 
     return ( 
         <div className="register-page centered baseBackground">
-            <div className="multipart-form">
-                <h1 className="mediaHeader" style={{textAlign: "center", fontSize: 30}}>Регистрация</h1>
-                <div className="login-inputs">
-                    <input type="text" className="defaultInput" placeholder="Логин" onChange={(e) => {
-                        setRegisterForm({...registerForm, username: e.target.value})
-                    }}>
-                    </input>
-                    <input type="password" placeholder="Пароль" className="defaultInput" onChange={(e) => {
-                        setRegisterForm({...registerForm, password: e.target.value})
-                    }}>
-                    </input>
-
-                    <PrimaryButton text="Зарегистрироваться" className="button-auth" onClick={() => {
-                        
-                    }}/>
+            <form className="multipart-form">
+                <h1 className="mediaHeader text-center text-3xl">Регистрация</h1>
+                <div className="form-inputs">
+                    <input
+                        id="login"
+                        ref={loginInput}
+                        type="text"
+                        placeholder="Логин"
+                    />
+                    <PasswordInput />
                 </div>
-            </div>
+                <button
+
+                    className="primary-button"
+                    onClick={handleRegister}
+                >
+                    Зарегистрироваться
+                </button>
+            </form>
             <ToastContainer/>
         </div>
-    )
-}
+    );
+};

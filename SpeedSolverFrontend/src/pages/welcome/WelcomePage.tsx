@@ -1,7 +1,6 @@
 import 'react-toastify/dist/ReactToastify.css';
 import styles from "./WelcomePage.module.css"
-import "../../anystyles/speedsolveruikit.css"
-import { PrimaryButton } from "../../components/primaryButton/PrimaryButton";
+
 import { ToastContainer } from "react-toastify";
 import { Link } from "react-router-dom";
 import AnimatedText from '../../components/swappingText/SwappingText';
@@ -18,11 +17,11 @@ const WelcomePage = () => {
             
             <div className={styles.button_container}>
                 <Link to="/login">
-                    <PrimaryButton text="Войти" />
+                    <button className='primary-button'>Войти</button>
                 </Link>
                 
                 <Link to="/register">
-                    <PrimaryButton text="Зарегистрироваться"/>
+                    <button className='primary-button'>Зарегистрироваться</button>
                 </Link>
                 
             </div>
