@@ -14,7 +14,7 @@ export const RegisterPage: React.FC = () => {
     return ( 
         <div className="register-page centered baseBackground">
             <form className="multipart-form">
-                <h1 className="mediaHeader text-center text-3xl">Регистрация</h1>
+                <h1 className="media-header">Регистрация</h1>
                 <div className="form-inputs">
                     <input
                         id="login"

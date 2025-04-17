@@ -20,7 +20,7 @@ export const LoginPage = () => {
     return (
        <div className='auth-form centered baseBackground'>
             <div className="multipart-form">
-                <h1 className="mediaHeader text-center text-3xl">Войти</h1>
+                <h1 className="media-header">Войти</h1>
                 <div className="form-inputs">
                     <input
                         type="text"

@@ -3,11 +3,6 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
-* {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-}
 
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);
@@ -84,6 +79,7 @@
     --input-border-color: #ccc;
     --input-focus-border-color: gray;
     --input-border-radius: 12px;
+    --font-inter: 'Inter', sans-serif;
 }
 
 .dark {
@@ -120,17 +116,18 @@
     --sidebar-ring: oklch(0.556 0 0);
 }
 
+body{
+    background-image: url("@/assets/mainbackground.svg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 .centered {
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
-}
-.baseBackground {
-    background-image: url("@/assets/mainbackground.svg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 input[type=text], 
@@ -145,6 +142,7 @@ input[type=password] {
     border-radius: var(--input-border-radius);
     font-size: 16px;
     outline: none;
+    width: 100%;
     transition: border-color 0.3s ease;
 }
 input[type=text].focus,
@@ -153,15 +151,6 @@ input[type=password].focus {
 }
 input::placeholder{
     color: #aaa;
-}
-
-.mediaHeader {
-    color: white;
-    font-size: 50px;
-}
-
-.mediaText {
-    font-family: 'Inter';
 }
 
 .multipart-form {
@@ -176,17 +165,13 @@ input::placeholder{
     align-self: center;
 }
 
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 .form-inputs {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 15px;
-    width: fit-content;
+    width: 100%;
 }
 
 .primary-button {
@@ -203,4 +188,19 @@ input::placeholder{
     width: 300px;
     height: 50px;
     text-align: center;
+}
+
+@layer base{
+    *{
+        @apply font-[Inter] m-0 p-0
+    }
+}
+
+@layer components{
+    .auth-form{
+        @apply flex flex-col justify-center
+    }
+    .media-header{
+        @apply text-white text-center text-3xl
+    }
 }
