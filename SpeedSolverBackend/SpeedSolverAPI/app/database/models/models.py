@@ -49,15 +49,19 @@ class Project(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
+    creator_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
 
+
+    creator: Mapped["User"] = relationship("User", back_populates="created_projects")
     objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="project")
     moderators: Mapped["ProjectModerator"] = relationship("ProjectModerator", back_populates="project")
+    members: Mapped[List["ProjectMember"]] = relationship("ProjectMember", back_populates="project")
 
 class TeamModerator(Base):
     __tablename__ = "team_moderators"
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
 
     team: Mapped["Team"] = relationship("Team", back_populates="moderators") # type: ignore
@@ -66,7 +70,7 @@ class TeamModerator(Base):
 class TeamMember(Base):
     __tablename__ = "team_members"
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
 
     team: Mapped["Team"] = relationship("Team", back_populates="members") # type: ignore
@@ -77,8 +81,8 @@ class TeamProject(Base):
     __tablename__ = "team_projects"
 
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
-    projectId: Mapped[UUID] = mapped_column(ForeignKey("projects.id"))
+    teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"))
+    projectId: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete="CASCADE"))
     team: Mapped["Team"] = relationship("Team", back_populates="projects") # type: ignore
     project: Mapped["Project"] = relationship("Project") # type: ignore
 
@@ -137,19 +141,17 @@ class User(Base):
     is_mail_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
 
-    profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user") # type: ignore
-
-    teams: Mapped[List["TeamMember"]] = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan") # type: ignore
-    teams_lead: Mapped[List["Team"]] = relationship("Team", back_populates="leader")
-
     team_invitations: Mapped[List["TeamInvitation"]] = relationship("TeamInvitation", back_populates="invited_user", foreign_keys="[TeamInvitation.invited_user_id]", cascade="all, delete-orphan")
+    project_invitations: Mapped[List["ProjectInvitation"]] = relationship("ProjectInvitation", back_populates="invited_user", foreign_keys="[ProjectInvitation.invited_user_id]", cascade="all, delete-orphan")
+    profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user") # type: ignore
+    teams: Mapped[List["TeamMember"]] = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan") # type: ignore
+    projects: Mapped[List["ProjectMember"]] = relationship("ProjectMember", back_populates="user", cascade="all, delete-orphan")
+    teams_lead: Mapped[List["Team"]] = relationship("Team", back_populates="leader")
     organizations: Mapped[List["Organization"]] = relationship("Organization", back_populates="leader", cascade="all, delete-orphan")
-    
     verification: Mapped["EmailVerification"] = relationship("EmailVerification", back_populates="user")
-
     teams_moderation: Mapped[List["TeamModerator"]] = relationship("TeamModerator", back_populates="user")
     projects_moderation: Mapped[List["ProjectModerator"]] = relationship("ProjectModerator", back_populates="user")
-
+    created_projects: Mapped[List["Project"]] = relationship("Project", back_populates="creator")
     authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author")
 
 class TeamInvitation(Base):
@@ -162,3 +164,23 @@ class TeamInvitation(Base):
     invited_user: Mapped["User"] = relationship("User", back_populates="team_invitations", foreign_keys="[TeamInvitation.invited_user_id]")
     invited_by_leader: Mapped["User"] = relationship("User", foreign_keys="[TeamInvitation.invited_by_leader_id]")
     team: Mapped["Team"] = relationship("Team")
+
+class ProjectMember(Base):
+    __tablename__ = "project_members"
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    projectId: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete='CASCADE'))
+
+    user: Mapped["User"] = relationship("User", back_populates="projects")
+    project: Mapped["Project"] = relationship("Project", back_populates="members")
+
+class ProjectInvitation(Base):
+    __tablename__ = "project_invitations"
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    invited_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    invited_by_leader_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    projectId: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete='CASCADE'))
+
+    invited_user: Mapped["User"] = relationship("User", back_populates="project_invitations", foreign_keys="[ProjectInvitation.invited_user_id]")
+    invited_by_leader: Mapped["User"] = relationship("User", foreign_keys="[ProjectInvitation.invited_by_leader_id]")
+    project: Mapped["Project"] = relationship("Project")

@@ -8,7 +8,7 @@ from app.security.jwtmanager import get_current_user
 from app.services.organization_service import OrganizationService
 
 organization_router = APIRouter(
-    prefix="/organization",
+    prefix="/organizations",
     tags=["Организации"]
 )
 
