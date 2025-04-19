@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useSpring, animated } from 'react-spring';
 import './TextStyles.css';
 
-const AnimatedText: React.FC = () => {
+const AnimatedText = ({strings}:{strings:string[]}) => {
   const [text, setText] = useState('');
   const [index, setIndex] = useState(0);
 
   // Используем useMemo для мемоизации массива texts
-  const texts = useMemo(() => ['создавайте организации.', 'создавайте команды.', 'распределяйте задачи.', 'планируйте сроки.'], []);
+  const texts = useMemo(() => strings, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
