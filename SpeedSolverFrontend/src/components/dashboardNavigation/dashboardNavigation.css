@@ -1,0 +1,16 @@
+
+.headerNavigation {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    justify-content: start;
+    align-items: start;
+    margin-top: 40px;
+    align-self: flex-start;
+    margin-left: 50px;
+}
+
+.headerNavigation__buttons {
+    display: flex;
+    gap: 15px;
+}

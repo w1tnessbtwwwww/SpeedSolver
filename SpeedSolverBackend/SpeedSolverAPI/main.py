@@ -30,7 +30,7 @@ api = FastAPI(
 api.add_middleware (
     CORSMiddleware,
     allow_origins=[
-        "http://localhost",
+        "http://speedsolver.ru",
         "https://speedsolver.ru",
         "http://localhost:3001"
     ],
@@ -38,10 +38,6 @@ api.add_middleware (
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
-@api.get("/", include_in_schema=False)
-async def redirect_to_docs():
-    return Redirect(url="/docs")
 
 
 api.include_router(main_router)

@@ -1,0 +1,12 @@
+
+
+.teamsList {
+    background-color: blueviolet;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 30vh;
+    height: 150px;
+    border-radius: 10px;
+}

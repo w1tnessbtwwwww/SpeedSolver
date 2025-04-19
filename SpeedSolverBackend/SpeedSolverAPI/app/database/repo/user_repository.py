@@ -17,8 +17,8 @@ class UserRepository(AbstractRepository):
     async def get_moderation_teams(self, userId: str):
         query = (
             select(self.model)
-            .where(self.model.userId == userId)
-            .join(TeamModerator, TeamModerator.userId == self.model.userId)
+            .where(self.model.id == userId)
+            .join(TeamModerator, TeamModerator.id == self.model.id)
         )
 
         result = await self._session.execute(query)
@@ -28,12 +28,6 @@ class UserRepository(AbstractRepository):
     async def create(self, **kwargs):
         query = insert(self.model).values(**kwargs).returning(self.model)
         result = await self._session.execute(query)
-        return result.scalars().first()
-
-    async def update_by_id(self, userId: str, **kwargs):
-        query = update(self.model).where(self.model.userId == userId).values(**kwargs).returning(self.model)
-        result = await self._session.execute(query)
-        await self._session.commit()
         return result.scalars().first()
 
     async def authenticate_user(self, email: str, password: str) -> Result:

@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.models.models import User
 from app.security.jwtmanager import get_current_user, oauth2_scheme
 
+from app.services.organization_service import OrganizationService
+from app.services.team_service import TeamService
 from app.services.user_profile_service import UserProfileService
 from app.services.user_service import UserService
 
@@ -15,6 +17,14 @@ account_router = APIRouter(
     prefix="/account",
     tags=["Account"]
 )
+
+# @account_router.get("/my_organizations/get_all")
+# async def get_my_organizations(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+#    return await OrganizationService(session).get_all_user_organizations(user.id)
+
+@account_router.get("/teams/get_all")
+async def get_my_teams(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    return await UserService(session).get_all_teams(user.id)
 
 @account_router.put("/updateprofile")
 async def update_profile(updateRequest: UpdateProfile, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):

@@ -1,10 +1,7 @@
-import "./LoginPage.css"
-import "../../../anystyles/centeredContainer.css"
-import "../../../anystyles/speedsolveruikit.css"
-import { PrimaryButton } from "../../../components/primaryButton/PrimaryButton"
 import { useState } from "react"
-import { authorize } from "../../../app/axios_api"
+import { authorize } from "@/app/axios_api"
 import { toast, ToastContainer } from "react-toastify"
+import PasswordInput from "@/components/passwordInput/PasswordInput"
 export const LoginPage = () => {
 
     const [authForm, setAuthForm] = useState(
@@ -21,20 +18,22 @@ export const LoginPage = () => {
     }
 
     return (
-       <div className='login-form-container centered baseBackground'>
+       <div className='auth-form centered baseBackground'>
             <div className="multipart-form">
-                <h1 className="mediaHeader" style={{textAlign: "center", fontSize: 30}}>Войти</h1>
-                <div className="login-inputs">
-                    <input type="text" className="defaultInput" placeholder="Логин" onChange={
+                <h1 className="media-header">Войти</h1>
+                <div className="form-inputs">
+                    <input
+                        type="text"
+                        className="defaultInput"
+                        placeholder="Логин"
+                        onChange={
                         (e) => {
                             setAuthForm({...authForm, username: e.target.value})}
                     }/>
-                    <input type="password" className="defaultInput" placeholder="Пароль" onChange={
-                        (e) => {
-                            setAuthForm({...authForm, password: e.target.value})
-                        }
-                    }/>
-                    <PrimaryButton text="Авторизоваться" className="button-auth" onClick={handleAuthorize}/> 
+                    <PasswordInput />
+                    <button className="primary-button" onClick={handleAuthorize}>
+                        Авторизоваться
+                    </button> 
                 </div>
             </div>
             <ToastContainer />

@@ -1,41 +1,22 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
 from app.database.database import get_session
-
 from app.database.models.models import User
-from app.schema.request.team.update_team import UpdateTeam
 from app.schema.request.team.create_team import CreateTeam
-
+from app.security.jwtmanager import get_current_user
 from app.services.team_service import TeamService
-from app.security.jwtmanager import JWTManager, oauth2_scheme, get_current_user
 
+team_router = APIRouter(
+    prefix="/team",
+    tags=["Team"]
+)
 
-team_router = APIRouter(prefix="/team", tags=["Teams management"])
-
+# @team_router.get("/get_all")
+# async def get_all_teams(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+#     return await TeamService(session).get_all_teams(user.id)
 
 @team_router.post("/create")
-async def create_team(createRequest: CreateTeam, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    
-    creating = await TeamService(session).create_team(createRequest, user.userId)
-    if not creating.success:
-        raise HTTPException(status_code=400, detail=creating.error)
-    
-    return creating.value
-
-@team_router.put("/update")
-async def update_team(team_id: str, updateRequest: UpdateTeam, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    updating = await TeamService(session).update_team(updateRequest, user.userId, team_id)
-    if not updating.success:
-        raise HTTPException(status_code=400, detail=updating.error)
-    
-    return updating.value
-
-@team_router.delete("/delete")
-async def delete_team(team_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    deleting = await TeamService(session).delete_team(team_id, user.userId)
-    if not deleting.success:
-        raise HTTPException(status_code=400, detail=deleting.error)
-    
-    return deleting.value
+async def create_team(team: CreateTeam, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
+    return await TeamService(session).create_team(team, user.id)

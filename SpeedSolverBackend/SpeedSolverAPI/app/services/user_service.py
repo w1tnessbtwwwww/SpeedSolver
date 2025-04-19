@@ -1,10 +1,12 @@
 
 from typing import List, Sequence
+from uuid import UUID
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload, defer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.models import User
+from app.database.models.models import Team, TeamMember, User, UserProfile
 
 from app.database.repo.user_repository import UserRepository
 
@@ -29,6 +31,18 @@ class UserService:
         self._repo: UserRepository = UserRepository(session)
 
 
+    async def get_all_teams(self, user_id: UUID):
+        query = (
+            select(Team)
+            .options(selectinload(Team.leader).defer(User.password).selectinload(User.profile).defer(UserProfile.userId),
+                     selectinload(Team.organization))
+            .join(TeamMember)
+            .join_from(TeamMember, User, TeamMember.userId == user_id)
+        )
+
+        exec = await self._session.execute(query)
+        result = exec.scalars().all()
+        return result
 
     async def get_moderation_teams(self, userId: str):
         return await self._repo.get_moderation_teams(userId)
@@ -49,9 +63,9 @@ class UserService:
     async def register(self, register_request: register.RegisterRequest) -> Result[None]:
        try:
             inserted = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
-            is_verification_inserted = await VerificationService(self._session).process_verification(inserted.userId, inserted.email)
+            is_verification_inserted = await VerificationService(self._session).process_verification(inserted.id, inserted.email)
             if not is_verification_inserted.success:
-                self._repo.rollback()
+                await self._repo.rollback()
                 return err(is_verification_inserted.error)
             
             await self._repo.commit()
