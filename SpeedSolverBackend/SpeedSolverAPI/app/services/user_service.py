@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload, defer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.models import Team, TeamMember, User, UserProfile
+from app.database.models.models import Organization, Team, TeamMember, User, UserProfile
 
 from app.database.repo.user_repository import UserRepository
 
@@ -34,10 +34,11 @@ class UserService:
     async def get_all_teams(self, user_id: UUID):
         query = (
             select(Team)
-            .options(selectinload(Team.leader).defer(User.password).selectinload(User.profile).defer(UserProfile.userId),
-                     selectinload(Team.organization))
-            .join(TeamMember)
-            .join_from(TeamMember, User, TeamMember.userId == user_id)
+            .options(defer(Team.leaderId))
+            .select_from(TeamMember)
+            .where(TeamMember.userId == user_id)
+            .options(selectinload(Team.leader), 
+                     selectinload(Team.organization).defer(Organization.id))
         )
 
         exec = await self._session.execute(query)
@@ -70,7 +71,7 @@ class UserService:
             
             await self._repo.commit()
        except IntegrityError as e:
-            return err("Пользователь с такой почтой уже зарегистрирован.")
+            return err(str(e))
        return success("Пользователь успешно зарегистрирован. Проверьте почту.")
         
     async def authorize(self, email: str, password: str):
