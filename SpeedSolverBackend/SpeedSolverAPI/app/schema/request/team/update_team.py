@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class UpdateTeam(BaseModel):
-    new_name: str
-    new_description: Optional[str]
-    new_leader_id: Optional[str]
-    new_organization_id: Optional[str]
+    title: str
+    description: Optional[str] = None
+    leaderId: Optional[str] = None
+    organizationId: Optional[str] = None

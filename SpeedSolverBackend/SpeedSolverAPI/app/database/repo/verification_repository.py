@@ -41,7 +41,7 @@ class VerificationRepository(AbstractRepository):
         result = await self._session.execute(last_verification_query)
         last_verification = result.scalars().first()
         if not last_verification:
-            verification = await self.create(id=userId, verification_code=verification_code)
+            verification = await self.create(userId=userId, verification_code=verification_code)
             return success(verification)
         
         return err("Верификация уже была пройдена.")
