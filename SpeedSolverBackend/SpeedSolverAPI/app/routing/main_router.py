@@ -17,4 +17,4 @@ main_router.include_router(account_router)
 
 main_router.include_router(organization_router)
 main_router.include_router(team_router)
-main_router.include_router(project_rout)er
+main_router.include_router(project_router)
