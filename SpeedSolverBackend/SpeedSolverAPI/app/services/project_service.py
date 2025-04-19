@@ -1,60 +1,75 @@
-from sqlalchemy import select
+from typing import List, Sequence
+from uuid import UUID
+from fastapi import HTTPException
+from sqlalchemy import and_, select
+from sqlalchemy.orm import selectinload, defer
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.models import Project, Team, TeamProject
-from app.database.repo.project_moderator_repo import ProjectModeratorRepository
+from app.database.models.models import Organization, Project, ProjectModerator, Team, TeamMember, User, UserProfile
+
+from app.database.repo.project_invitation_repository import ProjectInvitationRepository
+from app.database.repo.project_members_repository import ProjectMembersRepository
 from app.database.repo.project_repository import ProjectRepository
-
-from app.database.repo.team_projects_repository import TeamProjectRepository
 from app.schema.request.project.create_project import CreateProject
-from app.schema.request.project.update_project import UpdateProject
-
-from app.services.team_projects_service import TeamProjectService
+from app.services.team_project_service import TeamProjectService
 from app.services.team_service import TeamService
 
-from app.utils.result import Result, err, success
-from multipledispatch import dispatch
-
 class ProjectService:
-    
+
     def __init__(self, session: AsyncSession):
         self._session = session
         self._repo: ProjectRepository = ProjectRepository(session)
 
-    async def create_project(self, user_sender: str, team_id: str, createProject: CreateProject) -> Result[Project]:
-        team_service = TeamService(self._session)
-        can_interract = await team_service.can_interract_with_team(user_sender, team_id)
-        if not can_interract.success:
-            return err(can_interract.error)
 
-        return await self._repo.create_project(binded_teamId=team_id, title=createProject.title, description=createProject.description)
-    
-    async def update_project(self, user_sender: str, projectId: str, updateProject: UpdateProject):
-        team_project_service = TeamProjectService(self._session)
-        team = await team_project_service.get_team_by_project(projectId)
-        if not team.success:
-            return err(team.error)
+    async def is_user_project_creator(self, project_id: UUID, user_id: UUID):
+        if await TeamService(self._session).is_user_team_moderator(user_id, project_id):
+            return True
         
-        is_user_moder = await self.can_interract_with_team(user_sender, team.value.teamId)
-        if not is_user_moder:
-            return err("Вы не являетесь модератором данной команды.")
-        
-        upd_proj = await self._repo.update_project(projectId=projectId, new_title=updateProject.new_title, new_desc=updateProject.new_description)
-        if not upd_proj:
-            return err("Не удалось обновить команду")
-        
-        await self._session.commit()
-        return success(upd_proj)
-
-    async def is_project_moderator(self, projectId: str, userId: str):
-        project_moderator = await ProjectModeratorRepository(self._session).get_by_filter_one(
-            projectId=projectId, userId=userId
+        query = (
+            select(Project)
+            .where(Project.id == project_id)
         )
 
-        team_project_service = TeamProjectService(self._session)
+        exec = await self._session.execute(query)
+        result = exec.scalars().first()
 
-        team = await team_project_service.get_team_by_project(projectId)
-        if not team.success:
-            return err(team.error)
-        
-        return success(True) if (project_moderator or team.value.leaderId == userId) else err("Вы не являетесь модератором данной команды.")
+        if result.creator_id == user_id:
+            return True
+
+        return False
+
+    async def is_user_project_moderator(self, project_id: UUID, user_id: UUID):
+        if await self.is_user_project_creator(project_id, user_id):
+            return True
+
+        query = (
+            select(ProjectModerator)
+            .where(and_(
+                ProjectModerator.projectId == project_id,
+                ProjectModerator.userId == user_id
+            ))
+        )
+
+        exec = await self._session.execute(query)
+        result = exec.scalars().first()
+
+        if result:
+            return True
+
+        return False
+
+    async def create_project(self, creator_id: UUID, for_team: UUID, project_data: CreateProject):
+        if await TeamService(self._session).is_user_team_moderator(creator_id, for_team):
+            try:
+                project = await self._repo.create(creator_id=creator_id, title=project_data.title, description=project_data.description)
+                for user_id in project_data.auto_invite:
+                    await ProjectInvitationRepository(self._session).create(invited_user_id=user_id, invited_by_leader_id=creator_id, projectId=project.id)
+                team_project = await TeamProjectService(self._session).link_project(team_id=for_team, project_id=project.id)
+                creator_in_project = await ProjectMembersRepository(self._session).create(projectId=project.id, userId=creator_id)
+                return project
+            except IntegrityError:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Произошла ошибка внесения данных в базу данных"
+                )

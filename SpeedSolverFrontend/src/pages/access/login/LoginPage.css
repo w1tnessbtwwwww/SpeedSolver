@@ -1,0 +1,30 @@
+
+
+
+.multipart-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 60px;
+    width: 400px;
+    border: 2px solid darkviolet;
+    background-color: black;
+    border-radius: 15px;
+    align-self: center;
+}
+
+.login-form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.button-auth {
+    width: auto;
+}

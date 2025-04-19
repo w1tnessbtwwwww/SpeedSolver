@@ -1,8 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
-import uuid
+from uuid import UUID
 
 class CreateTeam(BaseModel):
-    name: str
-    description: Optional[str]
-    organizationId: Optional[uuid.UUID] = None
+    title: str
+    description: Optional[str] = None
+    organizationId: Optional[UUID] = None

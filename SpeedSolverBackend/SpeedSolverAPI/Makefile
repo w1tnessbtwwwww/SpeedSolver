@@ -9,3 +9,7 @@ mig:
 
 kill:
 	taskkill /f /im python.exe
+
+migration:
+	poetry run alembic revision --autogenerate
+	poetry run alembic upgrade head

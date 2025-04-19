@@ -3,5 +3,5 @@ from pydantic import BaseModel
 
 
 class CreateOrganization(BaseModel):
-    name: str
+    title: str
     description: Optional[str]

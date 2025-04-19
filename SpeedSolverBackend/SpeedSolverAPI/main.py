@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.responses import RedirectResponse as Redirect
 from pydantic import BaseModel
 
 from app.cfg.settings import settings
@@ -29,7 +30,7 @@ api = FastAPI(
 api.add_middleware (
     CORSMiddleware,
     allow_origins=[
-        "http://localhost",
+        "http://speedsolver.ru",
         "https://speedsolver.ru",
         "http://localhost:3001"
     ],

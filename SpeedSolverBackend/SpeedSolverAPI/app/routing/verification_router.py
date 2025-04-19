@@ -26,7 +26,7 @@ async def resend_verification(email: ResendCode, session: AsyncSession = Depends
         raise HTTPException(status_code=400, detail=user.error)
     
     
-    result = await VerificationService(session).resend_verification(user.value.userId, user.value.email)
+    result = await VerificationService(session).resend_verification(user.value.id, user.value.email)
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
     
@@ -39,11 +39,11 @@ async def confirm_verification(confirmRequest: EmailConfirmation, session: Async
     if not user.success:
         raise HTTPException(status_code=400, detail=user.error)
 
-    result = await VerificationService(session).confirm_email(user.value.userId, confirmRequest.code)
+    result = await VerificationService(session).confirm_email(user.value.id, confirmRequest.code)
     if not result.success:
         raise HTTPException(status_code=400, detail=result.error)
     
-    verify_user = await UserService(session).confirm_email(user.value.userId)
+    verify_user = await UserService(session).confirm_email(user.value.id)
 
     return {
         "message": "Почта успешно подтверждена."
