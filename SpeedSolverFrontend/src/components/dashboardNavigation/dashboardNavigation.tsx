@@ -1,15 +1,22 @@
-import { PrimaryButton } from "../primaryButton/PrimaryButton"
 import "./dashboardNavigation.css"
 
 export const DashboardNavigation = () => {
     return (
         <div className="headerNavigation">
             <div className="headerNavigation__buttons">
-                <PrimaryButton text="Мои организации"/>
-                <PrimaryButton text="Мои команды" onClick={() => {
+                <button className="primary-button">
+                Мои организации
+                </button>
+                <button
+                    className="primary-button"
+                    onClick={() => {
                     window.location.href = "/teams"
-                }}/>
-                <PrimaryButton text="Мои проекты"/>
+                }}>
+                    Мои команды
+                </button>
+                <button className="primary-button">
+                    Мои проекты
+                </button>
             </div>
         </div>
     )

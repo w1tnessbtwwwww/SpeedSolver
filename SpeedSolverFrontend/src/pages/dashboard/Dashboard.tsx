@@ -1,5 +1,3 @@
-import "../../anystyles/centeredContainer.css"
-import "../../anystyles/speedsolveruikit.css"
 import "./Dashboard.css"
 import { useEffect } from "react"
 import { DashboardNavigation } from "../../components/dashboardNavigation/dashboardNavigation"

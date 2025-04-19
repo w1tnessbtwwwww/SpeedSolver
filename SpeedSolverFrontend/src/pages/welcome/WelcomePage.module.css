@@ -1,18 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-* {
-    font-family: "Inter", sans-serif;
-}
-
-
-.welcome-text {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    gap: 10px;
-}
-
 .container {
     display: flex;
     flex-direction: column;
@@ -38,7 +24,7 @@
     font-size: 70px;
 }
 
-@media (max-width: 320px), (max-width: 480px), (max-width: 600px) {
+@media (max-width: 320px) {
     .button_container {
         flex-direction: column;
         gap: 30px;
