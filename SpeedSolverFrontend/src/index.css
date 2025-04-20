@@ -206,10 +206,13 @@ input::placeholder{
 
 @layer base{
     *{
-        @apply font-[Inter] m-0 p-0
+        @apply font-sans m-0 p-0
     }
     body{
         @apply min-h-screen
+    }
+    button{
+        @apply cursor-pointer
     }
 }
 
@@ -221,10 +224,7 @@ input::placeholder{
         @apply bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-third)] bg-clip-text text-transparent;
     }
     .link {
-        @apply text-[var(--color-secondary)] hover:text-gradient underline transition-colors duration-150;
-    }
-    .card{
-        @apply 
+        @apply text-[var(--color-secondary)] hover:text-primary underline transition-colors duration-150;
     }
 }
 
@@ -234,12 +234,6 @@ input::placeholder{
     }
     .media-header{
         @apply text-white text-center text-3xl
-    }
-    .dashboard-button{
-        @apply text-white px-4 py-1 cursor-pointer hover:bg-neutral-700 hover:rounded-full transition-[0.3s]
-    }
-    .dashboard-active-button{
-        @apply text-white px-4 py-1 cursor-pointer bg-neutral-600 hover:bg-neutral-500 rounded-xl transition-[0.3s]
     }
     
 }

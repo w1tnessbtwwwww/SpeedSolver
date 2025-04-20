@@ -1,24 +1,25 @@
 import { Route, Routes } from "react-router-dom"
+
+import Layout from '@/layout/MainLayout'
+
 import WelcomePage from "./pages/welcome/WelcomePage"
-import { LoginPage } from "./pages/access/login/LoginPage"
-import { RegisterPage } from "./pages/access/register/RegisterPage"
-import { Dashboard } from "./pages/dashboard/Dashboard"
-import Teams from "./pages/dashboard/Teams"
-import Companies from "./pages/dashboard/Companies"
-import Projects from "./pages/dashboard/Projects"
-import TestPage from "./pages/test/TestPage"
-import DashboardLayout from '@/layout/DashboardLayout'
+import { LoginPage } from "./pages/auth/login/LoginPage"
+import { RegisterPage } from "./pages/auth/register/RegisterPage"
+import Teams from "./pages/users/teams/Teams"
+import Companies from "./pages/users/companies/Companies"
+import Projects from "./pages/users/projects/Projects"
 import AboutPage from "./pages/aboutUs/aboutPage"
+import TestPage from "./pages/test/TestPage"
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<WelcomePage />} />
+      
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/dashboard" element={<Dashboard />} />
 
-      <Route element={<DashboardLayout/>}>
+      <Route element={<Layout/>}>
+        <Route path="/" element={<WelcomePage />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/projects" element={<Projects />} />
