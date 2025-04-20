@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import and_, select
 
 from app.database.models.models import TeamMember, TeamModerator, User
+from app.database.repo.team_invitation_repository import TeamInvitationRepository
 from app.database.repo.team_member_repository import TeamMemberRepository
 from app.database.repo.team_repository import TeamRepository
 from app.schema.request.team.create_team import CreateTeam
@@ -15,6 +16,15 @@ class TeamService:
         self.session = session
         self.repo = TeamRepository(session)
         
+    async def invite_user(self, team_id: UUID, user_id: UUID, moderator_id: UUID):
+        if not await self.is_user_team_moderator(moderator_id, team_id):
+            raise HTTPException(
+                status_code=403,
+                detail="У вас нет прав на приглашение в команду."
+            )
+        
+        await TeamInvitationRepository(self.session).create(teamId=team_id, userId=user_id)
+
     async def is_user_leader(self, user_id: UUID, team_id: UUID) -> bool:
         team = await self.repo.get_by_id(team_id)
         if team.leaderId == user_id:

@@ -1,12 +1,13 @@
-name: Deployment
+name: Build Backend
 
 on:
   push:
     branches:
-      - develop
+      - backend
       - master
   pull_request:
     branches:
+      - develop
       - master
       
 
@@ -22,17 +23,7 @@ jobs:
           cd SpeedSolverBackend/SpeedSolverAPI
           echo "${{ secrets.ENV_SPEEDSOLVER }}" > .env
 
-      - name: Copy .env frontend file
-        run: |
-          cd SpeedSolverFrontend
-          echo "${{ secrets.ENV_SPEEDSOLVER_FRONTEND }}" > .env
-
       - name: Run Backend
         run: |
           make build-backend
-
-      - name: Run Frontend
-        run: |
-          make build-frontend
-
       
