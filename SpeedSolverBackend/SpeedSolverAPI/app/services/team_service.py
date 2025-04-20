@@ -23,7 +23,7 @@ class TeamService:
                 detail="У вас нет прав на приглашение в команду."
             )
         
-        await TeamInvitationRepository(self.session).create(teamId=team_id, userId=user_id)
+    
 
     async def is_user_leader(self, user_id: UUID, team_id: UUID) -> bool:
         team = await self.repo.get_by_id(team_id)
