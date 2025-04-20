@@ -40,6 +40,8 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+
 }
 
 :root {
@@ -80,6 +82,12 @@
     --input-focus-border-color: gray;
     --input-border-radius: 12px;
     --font-inter: 'Inter', sans-serif;
+    --color-primary: #8f297a;
+    --color-secondary: #6d2e8f;
+    --color-third: #52508f;
+    --card-background: #0a0a0a;
+    --card-border: #818181;
+    --spacing-base:20px;
 }
 
 .dark {
@@ -190,9 +198,33 @@ input::placeholder{
     text-align: center;
 }
 
+.bg-pattern{
+    background-color: #000000;
+    opacity: 0.8;
+    background-image: repeating-radial-gradient( circle at 0 0, transparent 0, #000000 10px ), repeating-linear-gradient( #8F297A55, #8F297A );
+}
+
 @layer base{
     *{
         @apply font-[Inter] m-0 p-0
+    }
+    body{
+        @apply min-h-screen
+    }
+}
+
+@layer utilities {
+    .primary-gradient {
+        @apply bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-third)];
+    }
+    .text-gradient {
+        @apply bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-third)] bg-clip-text text-transparent;
+    }
+    .link {
+        @apply text-[var(--color-secondary)] hover:text-gradient underline transition-colors duration-150;
+    }
+    .card{
+        @apply 
     }
 }
 
@@ -203,4 +235,11 @@ input::placeholder{
     .media-header{
         @apply text-white text-center text-3xl
     }
+    .dashboard-button{
+        @apply text-white px-4 py-1 cursor-pointer hover:bg-neutral-700 hover:rounded-full transition-[0.3s]
+    }
+    .dashboard-active-button{
+        @apply text-white px-4 py-1 cursor-pointer bg-neutral-600 hover:bg-neutral-500 rounded-xl transition-[0.3s]
+    }
+    
 }

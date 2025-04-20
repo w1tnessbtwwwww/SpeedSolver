@@ -1,4 +1,3 @@
-import "./Dashboard.css"
 import { useEffect } from "react"
 import { DashboardNavigation } from "../../components/dashboardNavigation/dashboardNavigation"
 
@@ -10,7 +9,7 @@ export const Dashboard: React.FC = () => {
     })
 
     return (
-        <div className="centered baseBackground">
+        <div className="centered baseBackground ">
             <DashboardNavigation />
         </div>
     )
