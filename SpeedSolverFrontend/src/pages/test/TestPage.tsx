@@ -1,10 +1,22 @@
-import PasswordInput from "@/components/passwordInput/PasswordInput"
+import { Sidebar, SidebarTrigger } from "@/components/sidebar"
+import { useState } from "react"
+
 
 const TestPage = () => {
+  const [isSideberOpen, setIsSideberOpen] = useState(false);
+  const toggleIsSideberOpen = () => {setIsSideberOpen(!isSideberOpen)}
   return (
-    <div>
-      <PasswordInput/>
-    </div>
+    <>
+      <Sidebar
+        isOpen={isSideberOpen}
+        setIsOpen={setIsSideberOpen}
+      />
+      <SidebarTrigger onClick={toggleIsSideberOpen}>
+        <button>
+          Open
+        </button>
+      </SidebarTrigger>
+    </>
   )
 }
 

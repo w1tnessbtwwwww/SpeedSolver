@@ -26,6 +26,12 @@ const WelcomePage = () => {
                 </Link>
                 
             </div>
+            <Link
+                to='/about'
+                className='text-white hover:underline '
+            >
+                Узнайте о нас
+            </Link>
             <ToastContainer />
         </div>
     )
