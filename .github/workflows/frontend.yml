@@ -1,0 +1,30 @@
+name: Deployment
+
+on:
+  push:
+    branches:
+      - frontend
+      - master
+  pull_request:
+    branches:
+      - develop
+      - master
+      
+
+jobs:
+  Deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Downloading repository
+        uses: actions/checkout@v4
+
+      - name: Copy .env frontend file
+        run: |
+          cd SpeedSolverFrontend
+          echo "${{ secrets.ENV_SPEEDSOLVER_FRONTEND }}" > .env
+
+      - name: Run Frontend
+        run: |
+          make build-frontend
+
+      
