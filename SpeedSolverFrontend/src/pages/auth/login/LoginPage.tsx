@@ -12,10 +12,12 @@ export const LoginPage = () => {
         const username = loginInput.current?.value || "";
         const password = passwordInput.current?.value || "";
 
-        console.log("Введённые данные:", { username, password });
+        const formData = new URLSearchParams();
+        formData.append('username', username);
+        formData.append('password', password);
 
-        authorize(username, password)
-            .then(() => window.location.href = "/dashboard")
+        authorize(formData)
+            .then(() => window.location.href = "/about")
             .catch(error => toast.error(error));
     };
 

@@ -4,7 +4,7 @@ import Header from '@/components/header/Header';
 const Layout = () => {
   return (
     <>
-      <Header></Header>
+      <Header />
       <Outlet />
     </>
   );

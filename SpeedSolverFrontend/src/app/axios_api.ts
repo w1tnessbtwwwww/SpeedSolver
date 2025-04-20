@@ -38,19 +38,25 @@ export const refreshToken = () => {
     .catch(error => Promise.reject(error))
 }
 
-export const authorize = (username: string, password: string) => {
-    return client.post("/access/authorize", `username=${username}&password=${password}`, {
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+export const authorize = async (formData: URLSearchParams) => {
+    try {
+        const response = await axios.post(
+            'https://api.speedsolver.ru/v1/access/authorize',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw error.response?.data?.message || 'Authorization failed';
         }
-    }).then(response => response.data)
-    .catch(error => {
-        if (error.response) {
-            return Promise.reject(error.response.data.detail) || "Неизвестная ошибка"
-        }
-        return Promise.reject("Ошибка на стороне клиента.")
-    })
-}
+        throw 'Authorization failed';
+    }
+};
 
 export const register = (username: string, password: string) => {
     return client.post("/access/register", {
