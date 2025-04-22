@@ -7,6 +7,7 @@ from app.schema.request.project.create_project import CreateProject
 from app.security.jwtmanager import get_current_user
 from app.services.project_service import ProjectService
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.routing.project.task_router import task_router
 project_router = APIRouter(
     prefix="/projects",
     tags=["Проекты"]
@@ -18,9 +19,11 @@ async def create_project(team_id: UUID, project_data: CreateProject, user: User 
     return await ProjectService(session).create_project(user.id, team_id, project_data)
 
 @project_router.post("/invites/accept/{invite_request_id}")
-async def join_project(invite_request_id: UUID, project_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    return await ProjectService(session).approve_invite(user.id, project_id)
+async def join_project(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    pass
 
 @project_router.delete("/invites/decline/{invite_request_id}")
-async def leave_project(invite_request_id: UUID, project_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+async def decline_invite(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     pass
+
+project_router.include_router(task_router)

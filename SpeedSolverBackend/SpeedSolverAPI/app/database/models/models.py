@@ -18,12 +18,12 @@ class Objective(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
-    parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.id"), nullable=True)
+    parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.id", ondelete='CASCADE'), nullable=True)
     projectId: Mapped[UUID] = mapped_column(UUID, ForeignKey("projects.id", ondelete='CASCADE'), nullable=False)
     
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
     deadline_date: Mapped[datetime.datetime] = mapped_column(
-        default=datetime.datetime.now() + datetime.timedelta(days=7),
+        default=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=7),
     )
 
     author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -43,6 +43,7 @@ class Organization(Base):
     leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     leader: Mapped["User"] = relationship("User", back_populates="organizations")
     teams: Mapped[List["Team"]] = relationship("Team", back_populates="organization") # type: ignore
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
 
 class Project(Base):
     __tablename__ = "projects"
@@ -63,6 +64,8 @@ class TeamModerator(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
+
 
     team: Mapped["Team"] = relationship("Team", back_populates="moderators") # type: ignore
     user: Mapped["User"] = relationship("User", back_populates="teams_moderation") # type: ignore
@@ -118,6 +121,8 @@ class Team(Base):
     description: Mapped[str] = mapped_column(nullable=True)
     leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
     organizationId: Mapped[UUID] = mapped_column(ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=True)
+
 
     organization: Mapped["Organization"] = relationship("Organization", back_populates="teams") # type: ignore
     leader: Mapped["User"] = relationship("User", back_populates="teams_lead")
@@ -153,7 +158,7 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(nullable=True, unique=True)
     password: Mapped[str] = mapped_column()
-    registered: Mapped[Date] = mapped_column(Date, default=datetime.date.today(), nullable=True) 
+    registered: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=True) 
     is_mail_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
 
