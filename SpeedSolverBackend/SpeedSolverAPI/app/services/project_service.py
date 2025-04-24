@@ -1,3 +1,4 @@
+from collections import defaultdict
 from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import and_, func, select
@@ -23,32 +24,43 @@ class ProjectService:
         self._repo: ProjectRepository = ProjectRepository(session)
         self._objRepo: ObjectiveRepository = ObjectiveRepository(session)
 
+    async def build_objective_tree(self, objective):
+        objective_dict = {
+            "id": objective.id,
+            "title": objective.title,
+            "description": objective.description,
+            "created_at": objective.created_at,
+            "deadline_date": objective.deadline_date,
+            "author": {
+                "id": objective.author.id,
+                "name": objective.author.profile.name,
+            },
+            "child_objectives": []
+        }
+        for child in objective.child_objectives:
+            objective_dict["child_objectives"].append(await self.build_objective_tree(child))
+        return objective_dict
 
     async def get_all_tasks(self, project_id: UUID, user_id: UUID):
-
         if not await self.is_user_project_member(project_id, user_id):
             raise HTTPException(status_code=403, detail="Вы не являетесь участником проекта")
 
-        # query = (
-        #     select(Objective)
-        #     .where(Objective.projectId == project_id)
-        #     .options(selectinload(Objective.child_objectives), selectinload(Objective.author).selectinload(User.profile))
-        # )
-
-        print(project_id)
-
         query = (
-            select(Objective.title, Objective.description, Objective.created_at, Objective.deadline_date,
-                   UserProfile.name
-            )
-            .join(User, User.id == Objective.author_id)
-            .join(UserProfile, UserProfile.userId == User.id)
+            select(Objective)
             .where(Objective.projectId == project_id)
+            .options(selectinload(Objective.author).selectinload(User.profile),
+            selectinload(Objective.child_objectives))
         )
 
         exec = await self._session.execute(query)
-        result = exec.mappings().all()
-        return result
+        objectives = exec.scalars().unique().all()
+
+
+        main_objectives = [obj for obj in objectives if obj.parent_objectiveId is None]
+
+        objectives_list = [await self.build_objective_tree(obj) for obj in main_objectives]
+
+        return objectives_list
 
     async def create_task(self, project_id: UUID, author_id: UUID, task_data: CreateObjective):
         if not await self.is_user_project_member(project_id, author_id):
