@@ -6,7 +6,7 @@ import { SquareChevronRight } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 
 const Header = () => {
-  const isMobile = useBreakpoint({ breakpoint: 1000 });
+  const isMobile = useBreakpoint(1000);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen); 
   
@@ -32,14 +32,16 @@ const Header = () => {
             SpeedSolver
           </Link>
           <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen}>
-            <h1 className='font-bold text-xl text-white mt-6 mb-3'>SpeedSolver</h1>
+            <h1 className='font-bold text-xl text-white mt-6 mb-3 hover:text-[#8F297A] transition-[0.15s]'>
+              SpeedSolver
+              </h1>
             <nav className="flex flex-col gap-4">
               {navLinks.map((link, index) => (
                 <NavLink 
                   key={index} 
                   to={link.to}
                   className={({ isActive }) => 
-                    `block rounded ${isActive ? 'text-gradient' : 'text-[#818181]'}`
+                    `block rounded hover:underline ${isActive ? 'text-gradient' : 'text-[#818181]'}`
                   }
                   onClick={toggleSidebar}
                 >

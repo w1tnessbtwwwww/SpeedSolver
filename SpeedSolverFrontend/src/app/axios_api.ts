@@ -3,20 +3,9 @@ import { getCookie } from "../utils/cookieUtils";
 
 
 const client = axios.create({
-    baseURL: import.meta.env.VITE_SPEEDSOLVER_DEPLOY_API_URL
+    baseURL: import.meta.env.VITE_SPEEDSOLVER_DEPLOY_API_URL,
+    withCredentials: true
 })
-
-// client.interceptors.response.use (
-//     response => {
-//         return response
-//     },
-//     error => {
-//         if (error.response && error.response.status === 401) {
-//             return refreshToken()
-//         }
-//     }
-// )
-
 
 export const get_all_teams = () => {
     console.log(getCookie("access_token"))
@@ -46,7 +35,8 @@ export const authorize = async (formData: URLSearchParams) => {
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                }
+                },
+                withCredentials: true
             }
         );
         return response.data;
@@ -58,15 +48,40 @@ export const authorize = async (formData: URLSearchParams) => {
     }
 };
 
-export const register = (username: string, password: string) => {
-    return client.post("/access/register", {
-        username: username,
+export const register = (email: string, password: string) => {
+    return client.post("https://api.speedsolver.ru/v1/access/register", {
+        email: email,
         password: password
-    }).then(response => response.data)
+    })
+    .then(response => {
+        console.log('Server response:', response.data);
+        return response.data;
+    })
     .catch(error => {
         if (error.response) {
-            return Promise.reject(error.response.data.detail) || "Неизвестная ошибка"
+            console.error('Server error:', error.response.data);
+            return Promise.reject(error.response.data.detail || "Неизвестная ошибка");
         }
-        return Promise.reject("Ошибка на стороне клиента.")
+        console.error('Client error:', error);
+        return Promise.reject("Ошибка на стороне клиента.");
+    });
+}
+
+export const confirmVerification = (code: string, email: string) => {
+    return client.post("https://api.speedsolver.ru/v1/verification/confirm", {
+        code: code,
+        email: email
     })
+    .then(response => {
+        console.log('Verification response:', response.data);
+        return response.data;
+    })
+    .catch(error => {
+        if (error.response) {
+            console.error('Verification error:', error.response.data);
+            return Promise.reject(error.response.data.detail || "Verification failed");
+        }
+        console.error('Client error:', error);
+        return Promise.reject("Client-side error occurred");
+    });
 }

@@ -1,0 +1,8 @@
+.Blob {
+    width: var(--blob-size, 300px);
+    height: var(--blob-size, 300px);
+    background: radial-gradient(circle at center, #8F297A,  rgba(0, 0, 0, 1) 40%);
+    border-radius: 50%;
+    filter: blur(50px);
+    z-index: -1;
+}

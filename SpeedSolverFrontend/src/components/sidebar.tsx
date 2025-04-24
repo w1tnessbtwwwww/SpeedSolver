@@ -9,7 +9,7 @@ const Sidebar = ({ isOpen, setIsOpen,className, children }: {
     children?: ReactNode
 }) => {
 
-    const isMobile = useBreakpoint({});
+    const isMobile = useBreakpoint();
 
     return (
         <div className={`

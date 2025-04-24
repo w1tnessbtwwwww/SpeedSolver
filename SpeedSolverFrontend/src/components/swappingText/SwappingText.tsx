@@ -6,13 +6,12 @@ const AnimatedText = ({strings}:{strings:string[]}) => {
   const [text, setText] = useState('');
   const [index, setIndex] = useState(0);
 
-  // Используем useMemo для мемоизации массива texts
   const texts = useMemo(() => strings, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prevIndex) => (prevIndex + 1) % texts.length);
-    }, 1500); // Меняйте текст каждые 1.5 секунды
+    }, 1500);
 
     return () => clearInterval(interval);
   }, [texts.length]);
@@ -22,14 +21,14 @@ const AnimatedText = ({strings}:{strings:string[]}) => {
   }, [index, texts]);
 
   const springProps = useSpring({
-    opacity: 0.6,
+    opacity: 1, // Changed from 0.6 to 1
     from: { opacity: 0 },
-    config: { duration: 1000 },
+    config: { duration: 800 }, // Slightly faster animation
     reset: true,
   });
 
   return (
-    <animated.div style={springProps}>
+    <animated.div style={springProps} className="relative z-10"> {/* Added z-index and relative positioning */}
       <h1 className='welcome-text'>{text}</h1>
     </animated.div>
   );

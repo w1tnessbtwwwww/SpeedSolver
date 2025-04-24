@@ -2,8 +2,11 @@ import { useRef } from "react";
 import { authorize } from "@/app/axios_api";
 import { toast, ToastContainer } from "react-toastify";
 import PasswordInput, { PasswordInputRef } from "@/components/passwordInput/PasswordInput";
+import { useNavigate } from "react-router-dom";
+import { Blob } from "@/components/blob/Blob";
 
 export const LoginPage = () => {
+    const navigate = useNavigate();
     const loginInput = useRef<HTMLInputElement>(null);
     const passwordInput = useRef<PasswordInputRef>(null);
 
@@ -17,12 +20,13 @@ export const LoginPage = () => {
         formData.append('password', password);
 
         authorize(formData)
-            .then(() => window.location.href = "/about")
+            .then(() => navigate("/about"))
             .catch(error => toast.error(error));
     };
 
     return (
-        <div className='auth-form centered baseBackground'>
+        <div className='auth-form centered'>
+            <Blob size={5000} />
             <form className="multipart-form">
                 <h1 className="media-header">Войти</h1>
                 <div className="form-inputs">
