@@ -59,6 +59,7 @@ class TeamService:
         try:
             created_team = await self.repo.create(leaderId=leader_id, **team.model_dump())
             await TeamMemberRepository(self.session).create(teamId=created_team.id, userId=leader_id)
+            return created_team
         except IntegrityError as e:
             logger.error("Произошла ошибка внесения данных в базу данных", str(e))
             raise HTTPException(
