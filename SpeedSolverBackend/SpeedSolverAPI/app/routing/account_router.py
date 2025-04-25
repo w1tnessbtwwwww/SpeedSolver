@@ -26,17 +26,10 @@ account_router = APIRouter(
 async def get_my_teams(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await UserService(session).get_all_teams(user.id)
 
-@account_router.put("/updateprofile")
+@account_router.put("/profile/update")
 async def update_profile(updateRequest: UpdateProfile, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-   result = await UserProfileService(session).update_profile(user.userId, updateRequest)
-
-   if not result.success:
-       raise HTTPException(
-            status_code=400, 
-            detail=result.error
-        )
-   
-   return result.value
+   result = await UserProfileService(session).update_profile(user.id, updateRequest)
+   return result
    
 @account_router.delete("/delete")
 async def delete_account(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):

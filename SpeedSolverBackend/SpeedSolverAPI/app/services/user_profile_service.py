@@ -1,4 +1,5 @@
 
+from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,10 +22,14 @@ class UserProfileService:
 
 
     async def update_profile(self, userId: str, update_request: UpdateProfile):
-        return await self._repo.update_profile(
-            userId,
-            update_request.surname,
-            update_request.name,
-            update_request.patronymic,
-            update_request.birthdate
+        query = (
+            update(self._repo.model)
+            .where(self._repo.model.userId == userId)
+            .values(**update_request.dict())
+            .returning(self._repo.model)
         )
+
+        exec = await self._session.execute(query)
+        await self._session.commit()
+        result = exec.scalars().one_or_none()
+        return result
