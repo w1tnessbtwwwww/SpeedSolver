@@ -35,7 +35,8 @@ class UserService:
         query = (
             select(Team)
             .join_from(Team, TeamMember, Team.id == TeamMember.teamId)
-            .where(TeamMember.userId == user_id)       
+            .where(TeamMember.userId == user_id)
+            .options(selectinload(Team.leader).selectinload(User.profile), selectinload(Team.organization))       
         )
 
         exec = await self._session.execute(query)
