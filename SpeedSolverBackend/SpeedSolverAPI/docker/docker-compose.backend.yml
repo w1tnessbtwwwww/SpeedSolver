@@ -32,3 +32,6 @@ services:
     depends_on:
       - speedsolver.database
 
+    volumes:
+      - ~/speedsolver-avatars:/app/speedsolver/speedsolver-avatars
+

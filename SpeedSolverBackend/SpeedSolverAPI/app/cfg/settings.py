@@ -1,6 +1,8 @@
 from pydantic_settings import BaseSettings
 from yarl import URL
 class Settings(BaseSettings):
+    SPEEDSOLVER_BASE_URL: str
+    
     POSTGRES_HOST: str
     POSTGRES_PORT: int
     POSTGRES_USER: str

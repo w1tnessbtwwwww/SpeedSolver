@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import UUID
 
 import uuid
 
-from typing import List
+from typing import List, Optional
 
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
 
@@ -139,6 +139,7 @@ class UserProfile(Base):
     birthdate: Mapped[Date] = mapped_column(Date, nullable=True, default=datetime.date.today())
     about: Mapped[str] = mapped_column(nullable=True)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    avatar_path: Mapped[Optional[str]] = mapped_column()
 
     user: Mapped["User"] = relationship("User", back_populates="profile") # type: ignore
 

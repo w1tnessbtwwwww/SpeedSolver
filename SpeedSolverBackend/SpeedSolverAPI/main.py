@@ -1,23 +1,12 @@
-from contextlib import asynccontextmanager
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse as Redirect
-from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
 
-from app.cfg.settings import settings
 from app.database.database import get_session, create_tables
 from app.exc.bad_email import BadEmail
 from app.routing.main_router import main_router
-from app.services.user_service import UserService
-from app.utils.email_service.email_service import EmailService
 
 from starlette.middleware.cors import CORSMiddleware
-
-from typing import Annotated
-from sqlalchemy.ext.asyncio import AsyncSession
-from alembic.config import Config
-from alembic import command
-
 
 
 api = FastAPI(
@@ -42,6 +31,7 @@ api.add_middleware (
 
 api.include_router(main_router)
 
+api.mount("/speedsolver-avatars", StaticFiles(directory="speedsolver-avatars"), name="avatars")
 
 @api.exception_handler(BadEmail)
 async def bad_email(request, exc: BadEmail):
