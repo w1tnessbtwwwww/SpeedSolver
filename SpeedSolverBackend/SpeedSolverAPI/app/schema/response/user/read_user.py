@@ -1,15 +1,11 @@
-from datetime import date
 from typing import Optional
-from pydantic import BaseModel, field_validator
-from app.cfg.settings import settings
-class ReadUserProfile(BaseModel):
-    surname: Optional[str]
-    name: Optional[str]
-    patronymic: Optional[str]
-    about: Optional[str]
-    birthdate: Optional[date]
-    avatar_path: Optional[str]
+from pydantic import BaseModel
+from uuid import UUID
 
-    @field_validator("avatar_path")
-    def prepare_path(cls, value):
-        return f"{settings.SPEEDSOLVER_BASE_URL}/{value}" if value is not None else None
+from app.schema.response.user.read_user_profile import ReadUserProfile
+
+class ReadUser(BaseModel):
+    id: UUID
+    email: str
+    is_mail_verified: bool
+    profile: Optional[ReadUserProfile] = None

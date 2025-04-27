@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import glob
 
 from app.database.models.models import User
-from app.schema.response.user.read_user import ReadUserProfile
+from app.schema.response.user.read_user_profile import ReadUserProfile
 from app.security.jwtmanager import get_current_user, oauth2_scheme
 
 from app.services.organization_service import OrganizationService
