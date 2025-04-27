@@ -115,3 +115,40 @@ export const confirmVerification = (code: string, email: string) => {
         return Promise.reject("Client-side error occurred");
     });
 }
+
+
+interface CreateTeamData {
+    title: string;
+    description: string;
+    organizationId?: string;
+}
+
+export const create_team = (teamData: CreateTeamData) => {
+    const token = localStorage.getItem("access_token") || getCookie("access_token");
+    return client.post("https://api.speedsolver.ru/v1/teams/create", teamData, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.data)
+    .catch(async (error) => {
+        if (error.response?.status === 401) {
+            try {
+                await refreshToken();
+                const newToken = localStorage.getItem("access_token") || getCookie("access_token");
+                const retryResponse = await client.post("https://api.speedsolver.ru/v1/teams/create", teamData, {
+                    headers: {
+                        Authorization: `Bearer ${newToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                return retryResponse.data;
+            } catch (refreshError) {
+                localStorage.removeItem("access_token");
+                throw new Error('Authentication failed');
+            }
+        }
+        throw error;
+    });
+};

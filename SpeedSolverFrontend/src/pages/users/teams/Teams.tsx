@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { get_all_teams } from '@/app/axios_api';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import AddTeamForm from '@/components/addTeamForm/addTeamForm';
 
 interface Leader {
   password: string;
@@ -28,6 +30,7 @@ const Teams = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showOnlyAdmin, setShowOnlyAdmin] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -97,7 +100,17 @@ const Teams = () => {
 
   return (
     <div className='p-6'>
-      <h1 className="text-white text-xl font-bold mb-4">Команды</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-white text-xl font-bold">Команды</h1>
+        <Button 
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="bg-[#8F297A] hover:bg-[#6F1960] fixed md:static z-10 right-8 bottom-8"
+        >
+          {showAddForm ? 'Отменить' : 'Создать команду'}
+        </Button>
+      </div>
+
+      {showAddForm && <AddTeamForm onClose={() => setShowAddForm(false)} />}
 
       <div className="flex gap-4 items-center mb-6">
         <input

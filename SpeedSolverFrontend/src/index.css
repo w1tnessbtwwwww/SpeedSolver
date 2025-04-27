@@ -137,7 +137,8 @@ body{
 
 input[type=text], 
 input[type=password],
-input[type=email] {
+input[type=email],
+textarea {
     padding-top: var(--input-padding);
     padding-bottom: var(--input-padding);
     padding-left: calc(var(--input-padding) * 2);
@@ -151,9 +152,10 @@ input[type=email] {
     width: 100%;
     transition: border-color 0.3s ease;
 }
-input[type=text].focus,
-input[type=password].focus,
-input[type=email].focus {
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=email]:focus,
+textarea:focus {
     border-color: var(--input-focus-border-color);
 }
 input::placeholder{
