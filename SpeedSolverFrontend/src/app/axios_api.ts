@@ -8,23 +8,44 @@ const client = axios.create({
 })
 
 export const get_all_teams = () => {
-    console.log(getCookie("access_token"))
-    return client.get("/account/teams/get_all", {
+    const token = localStorage.getItem("access_token") || getCookie("access_token")  ;
+    return client.get("https://api.speedsolver.ru/v1/account/teams/get_all", {
         headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwNTVjNjdiNS1lNTc5LTQ1MzEtOTIzOC0xYjVlOGUzNDRlNWEiLCJleHAiOjE3NDQ0NTU2NTF9.Neoa88txlnadWifRplHS9_gFixTC9Tqb4fEUHOfRDH4`
+            Authorization: `Bearer ${token}`
         }
     })
-    .then(response => {
-        console.log(response.data)
-        return response.data
-    })
-    .catch(error => console.log(error))
+    .then(response => response.data)
+    .catch(async (error) => {
+        if (error.response?.status === 401) {
+            try {
+                await refreshToken();
+                const newToken = localStorage.getItem("access_token") || getCookie("access_token");
+                const retryResponse = await client.get("https://api.speedsolver.ru/v1/account/teams/get_all", {
+                    headers: {
+                        Authorization: `Bearer ${newToken}`
+                    }
+                });
+                return retryResponse.data;
+            } catch (refreshError) {
+                localStorage.removeItem("access_token");
+                throw new Error('Authentication failed');
+            }
+        }
+        throw error;
+    });
 }
 
 export const refreshToken = () => {
     return client.get("/access/refresh")
-    .then()
-    .catch(error => Promise.reject(error))
+    .then(response => {
+        if (response.data.access_token) {
+            localStorage.setItem("access_token", response.data.access_token);
+        }
+    })
+    .catch(error => {
+        localStorage.removeItem("access_token");
+        return Promise.reject(error);
+    });
 }
 
 export const authorize = async (formData: URLSearchParams) => {
@@ -39,8 +60,16 @@ export const authorize = async (formData: URLSearchParams) => {
                 withCredentials: true
             }
         );
+        if (response.data.access_token) {
+            localStorage.setItem("access_token", response.data.access_token);
+            localStorage.setItem("refresh_token", response.data.refresh_token);
+            localStorage.setItem("user_email", formData.get("username") || "");
+        }
         return response.data;
     } catch (error) {
+        localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
+        localStorage.removeItem("user_email");
         if (axios.isAxiosError(error)) {
             throw error.response?.data?.message || 'Authorization failed';
         }
@@ -52,10 +81,11 @@ export const register = (email: string, password: string) => {
     return client.post("https://api.speedsolver.ru/v1/access/register", {
         email: email,
         password: password
-    })
-    .then(response => {
-        console.log('Server response:', response.data);
-        return response.data;
+    }, {
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
     .catch(error => {
         if (error.response) {

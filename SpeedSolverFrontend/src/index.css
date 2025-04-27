@@ -221,11 +221,17 @@ input::placeholder{
 }
 
 @layer utilities {
+    .admin-gradient {
+        @apply bg-gradient-to-r from-[#FFA20D] via-[#F7FF1A] to-[#F7FF1A];
+    }
     .primary-gradient {
         @apply bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-third)];
     }
     .text-gradient {
         @apply bg-gradient-to-r from-[var(--color-primary)] via-[var(--color-secondary)] to-[var(--color-third)] bg-clip-text text-transparent;
+    }
+    .text-admin-gradient {
+        @apply bg-gradient-to-r from-[#FFA20D] via-[#F7FF1A] to-[#F7FF1A] bg-clip-text text-transparent;
     }
     .glass-button{
         @apply bg-white/30 text-white hover:bg-white/40 backdrop-blur-xs border-none py-3 px-5 rounded-2xl transition-[0.3s] shadow

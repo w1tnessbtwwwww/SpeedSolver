@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { register } from "@/app/axios_api";
@@ -8,6 +8,7 @@ export const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
     const emailInput = useRef<HTMLInputElement>(null);
     const passwordInput = useRef<PasswordInputRef>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
@@ -19,12 +20,17 @@ export const RegisterPage: React.FC = () => {
             return;
         }
 
+        setIsLoading(true);
         try {
-            await register(email, password);
-            toast.success("Registration successful! Please check your email for verification code.");
-            navigate("/verify", { state: { email } });
+            const response = await register(email, password);
+            if (response) {
+                toast.success("Registration successful! Please check your email for verification code.");
+                navigate("/verify", { state: { email } });
+            }
         } catch (error) {
             toast.error(typeof error === 'string' ? error : "Registration failed");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -38,14 +44,16 @@ export const RegisterPage: React.FC = () => {
                         ref={emailInput}
                         type="email"
                         placeholder="Email"
+                        disabled={isLoading}
                     />
-                    <PasswordInput ref={passwordInput} />
+                    <PasswordInput ref={passwordInput} disabled={isLoading} />
                 </div>
                 <button
                     className="primary-button"
                     onClick={handleRegister}
+                    disabled={isLoading}
                 >
-                    Зарегистрироваться
+                    {isLoading ? "Регистрация..." : "Зарегистрироваться"}
                 </button>
             </form>
             <ToastContainer/>
