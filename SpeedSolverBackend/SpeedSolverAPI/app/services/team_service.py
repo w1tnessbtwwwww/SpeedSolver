@@ -20,6 +20,23 @@ class TeamService:
         self.repo = TeamRepository(session)
         
 
+    async def get_team(self, team_id: UUID, user_id: UUID):
+        if not await self.is_user_team_member(user_id, team_id):
+            raise HTTPException(
+                status_code=403,
+                detail="У вас нет доступа к получению информации о команде"
+            )
+        
+        query = (
+            select(Team)
+            .where(Team.id == team_id)
+            .options(selectinload(Team.members).selectinload(TeamMember.user).selectinload(User.profile), 
+                     selectinload(Team.projects).selectinload(TeamProject.project))
+        )
+        exec = await self.session.execute(query)
+        result = exec.scalars().all()
+        return result
+
     async def get_all_projects(self, team_id: UUID, user_id: UUID):
         if not await self.is_user_team_member(user_id, team_id):
             raise HTTPException(
