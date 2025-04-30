@@ -38,7 +38,7 @@ async def get_profile(user: User = Depends(get_current_user), session: AsyncSess
 
 @account_router.put("/profile/update")
 async def update_profile(updateRequest: UpdateProfile, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    return await UserProfileService(session).update_profile(user.id, updateRequest)
+    return await UserProfileService(session).update_profile(user.id, **updateRequest.model_dump())
 
 @account_router.put("/profile/avatar/update", response_model=ReadUserProfile)
 async def upload_avatar(avatar: UploadFile = File(...), user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):    
