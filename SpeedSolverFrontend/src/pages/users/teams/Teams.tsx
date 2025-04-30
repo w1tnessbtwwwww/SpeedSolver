@@ -33,36 +33,41 @@ const Teams = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const token = localStorage.getItem('access_token');
-        const email = localStorage.getItem('user_email');
-        setUserEmail(email);
+  const fetchTeams = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      const email = localStorage.getItem('user_email');
+      setUserEmail(email);
 
-        if (!token) {
-          navigate('/login');
-          return;
-        }
-
-        const data = await get_all_teams();
-        setTeams(Array.isArray(data) ? data : []);
-      } catch (err: any) {
-        console.error('Error fetching teams:', err);
-
-        if (err.message === 'Authentication failed') {
-          localStorage.removeItem('access_token');
-          navigate('/login');
-        } else {
-          setError('Ошибка загрузки команд');
-        }
-      } finally {
-        setIsLoading(false);
+      if (!token) {
+        navigate('/login');
+        return;
       }
-    };
 
+      const data = await get_all_teams();
+      setTeams(Array.isArray(data) ? data : []);
+    } catch (err: any) {
+      console.error('Error fetching teams:', err);
+
+      if (err.message === 'Authentication failed') {
+        localStorage.removeItem('access_token');
+        navigate('/login');
+      } else {
+        setError('Ошибка загрузки команд');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchTeams();
   }, [navigate]);
+
+  const handleAddTeamSuccess = () => {
+    setShowAddForm(false);
+    fetchTeams();
+  };
 
   const filteredTeams = teams.filter(team => {
     const matchesSearch = team.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -110,7 +115,7 @@ const Teams = () => {
         </Button>
       </div>
 
-      {showAddForm && <AddTeamForm onClose={() => setShowAddForm(false)} />}
+      {showAddForm && <AddTeamForm onClose={() => setShowAddForm(false)} onSuccess={handleAddTeamSuccess} />}
 
       <div className="flex gap-4 items-center mb-6">
         <input

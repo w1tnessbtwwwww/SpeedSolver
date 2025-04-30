@@ -25,9 +25,10 @@ const formSchema = z.object({
 
 interface AddTeamFormProps {
   onClose: () => void;
+  onSuccess: () => void;
 }
 
-const AddTeamForm = ({ onClose }: AddTeamFormProps) => {
+const AddTeamForm = ({ onClose, onSuccess }: AddTeamFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,6 +43,7 @@ const AddTeamForm = ({ onClose }: AddTeamFormProps) => {
       const response = await create_team(values);
       console.log('Team created:', response);
       form.reset();
+      onSuccess();
       onClose();
     } catch (error) {
       console.error('Error creating team:', error);
