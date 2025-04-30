@@ -80,7 +80,9 @@ const Header = () => {
                 ))
               ) : (
                 <div className="flex flex-col gap-2 mt-2">
-                  <span className="text-white">{userEmail}</span>
+                  <Link to="/profile" className="text-white hover:text-[#8F297A] transition-colors">
+                    {userEmail}
+                  </Link>
                   <button 
                     onClick={() => {
                       handleLogout();
@@ -117,7 +119,9 @@ const Header = () => {
                 ))
               ) : (
                 <div className="flex items-center gap-4">
-                  <span className="text-white">{userEmail}</span>
+                  <Link to="/profile" className="text-white hover:text-[#8F297A] transition-colors">
+                    {userEmail}
+                  </Link>
                   <button 
                     onClick={handleLogout}
                     className="text-[#818181] hover:text-white transition-colors"

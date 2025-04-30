@@ -13,6 +13,7 @@ import Companies from "./pages/users/companies/Companies"
 import Projects from "./pages/users/projects/Projects"
 import AboutPage from "./pages/aboutUs/aboutPage"
 import TestPage from "./pages/test/TestPage"
+import ProfilePage from "./pages/users/profile/ProfilePage"
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       </Route>
 
       <Route element={<Layout/>}>
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/teams" element={<Teams />} />
         <Route path="/team/:id" element={<TeamPage />} />
         <Route path="/companies" element={<Companies />} />
