@@ -152,3 +152,86 @@ export const create_team = (teamData: CreateTeamData) => {
         throw error;
     });
 };
+
+
+interface TeamMemberProfile {
+  surname: string;
+  name: string;
+  birthdate: string;
+  userId: string;
+  avatar_path: string | null;
+  patronymic: string;
+  id: string;
+  about: string;
+}
+
+interface TeamMemberUser {
+  password: string;
+  is_mail_verified: boolean;
+  id: string;
+  email: string;
+  registered: string;
+  profile: TeamMemberProfile;
+}
+
+interface TeamMember {
+  id: string;
+  invited_by_request_id: string | null;
+  userId: string;
+  teamId: string;
+  user: TeamMemberUser;
+}
+
+interface TeamProject {
+  id: string;
+  creator_id: string;
+  title: string;
+  description: string;
+  created_at: string;
+}
+
+interface TeamProjectLink {
+  teamId: string;
+  projectId: string;
+  id: string;
+  project: TeamProject;
+}
+
+interface TeamDetails {
+  title: string;
+  description: string;
+  organizationId: string | null;
+  id: string;
+  leaderId: string;
+  created_at: string;
+  projects: TeamProjectLink[];
+  members: TeamMember[];
+}
+
+export const get_team_by_id = (teamId: string) => {
+    const token = localStorage.getItem("access_token") || getCookie("access_token");
+    return client.get(`https://api.speedsolver.ru/v1/teams/about/${teamId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    .then(response => response.data[0]) // Получаем первый элемент массива, так как API возвращает массив
+    .catch(async (error) => {
+        if (error.response?.status === 401) {
+            try {
+                await refreshToken();
+                const newToken = localStorage.getItem("access_token") || getCookie("access_token");
+                const retryResponse = await client.get(`https://api.speedsolver.ru/v1/teams/about/${teamId}`, {
+                    headers: {
+                        Authorization: `Bearer ${newToken}`
+                    }
+                });
+                return retryResponse.data[0];
+            } catch (refreshError) {
+                localStorage.removeItem("access_token");
+                throw new Error('Authentication failed');
+            }
+        }
+        throw error;
+    });
+};

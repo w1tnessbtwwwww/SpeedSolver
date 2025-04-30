@@ -8,6 +8,7 @@ import { LoginPage } from "./pages/auth/login/LoginPage"
 import { RegisterPage } from "./pages/auth/register/RegisterPage"
 import { VerificationPage } from "./pages/auth/verify/VerifyPage"
 import Teams from "./pages/users/teams/Teams"
+import TeamPage from "./pages/users/teams/TeamPage" // TODO: fix this import, it's not working right now, it's just a tem
 import Companies from "./pages/users/companies/Companies"
 import Projects from "./pages/users/projects/Projects"
 import AboutPage from "./pages/aboutUs/aboutPage"
@@ -25,6 +26,7 @@ function App() {
 
       <Route element={<Layout/>}>
         <Route path="/teams" element={<Teams />} />
+        <Route path="/team/:id" element={<TeamPage />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/about" element={<AboutPage/>}/>
