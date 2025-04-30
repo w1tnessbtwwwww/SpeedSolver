@@ -1,3 +1,4 @@
+from typing import List
 from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 
@@ -22,7 +23,7 @@ team_router.include_router(team_invites_router)
 team_router.include_router(team_members_router)
 
 
-@team_router.get("/about/{team_id}")
+@team_router.get("/about/{team_id}", response_model=List[ReadTeam])
 async def team_about(team_id: str, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await TeamService(session).get_team(team_id, user.id)
 

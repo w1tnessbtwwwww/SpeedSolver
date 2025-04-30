@@ -1,17 +1,12 @@
-from datetime import datetime
 from typing import Optional
 from uuid import UUID
 from pydantic import BaseModel
 from typing import Optional, List
 
 from app.schema.response.project.read_team_project import ReadProject, ReadTeamProject
-from app.schema.response.team.read_team_member import ReadTeamMember
 from app.schema.response.user.read_user import ReadUser
 
-class ReadTeam(BaseModel):
+class ReadTeamMember(BaseModel):
     id: UUID
-    title: str
-    description: Optional[str]
-    created_at: datetime
-    projects: List[ReadTeamProject]
-    members: List[ReadTeamMember]
+
+    user: Optional[ReadUser]
