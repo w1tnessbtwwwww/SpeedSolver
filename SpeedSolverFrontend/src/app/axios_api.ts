@@ -154,59 +154,59 @@ export const create_team = (teamData: CreateTeamData) => {
 };
 
 
-interface TeamMemberProfile {
-  surname: string;
-  name: string;
-  birthdate: string;
-  userId: string;
-  avatar_path: string | null;
-  patronymic: string;
-  id: string;
-  about: string;
-}
+// interface TeamMemberProfile {
+//   surname: string;
+//   name: string;
+//   birthdate: string;
+//   userId: string;
+//   avatar_path: string | null;
+//   patronymic: string;
+//   id: string;
+//   about: string;
+// }
 
-interface TeamMemberUser {
-  password: string;
-  is_mail_verified: boolean;
-  id: string;
-  email: string;
-  registered: string;
-  profile: TeamMemberProfile;
-}
+// interface TeamMemberUser {
+//   password: string;
+//   is_mail_verified: boolean;
+//   id: string;
+//   email: string;
+//   registered: string;
+//   profile: TeamMemberProfile;
+// }
 
-interface TeamMember {
-  id: string;
-  invited_by_request_id: string | null;
-  userId: string;
-  teamId: string;
-  user: TeamMemberUser;
-}
+// interface TeamMember {
+//   id: string;
+//   invited_by_request_id: string | null;
+//   userId: string;
+//   teamId: string;
+//   user: TeamMemberUser;
+// }
 
-interface TeamProject {
-  id: string;
-  creator_id: string;
-  title: string;
-  description: string;
-  created_at: string;
-}
+// interface TeamProject {
+//   id: string;
+//   creator_id: string;
+//   title: string;
+//   description: string;
+//   created_at: string;
+// }
 
-interface TeamProjectLink {
-  teamId: string;
-  projectId: string;
-  id: string;
-  project: TeamProject;
-}
+// interface TeamProjectLink {
+//   teamId: string;
+//   projectId: string;
+//   id: string;
+//   project: TeamProject;
+// }
 
-interface TeamDetails {
-  title: string;
-  description: string;
-  organizationId: string | null;
-  id: string;
-  leaderId: string;
-  created_at: string;
-  projects: TeamProjectLink[];
-  members: TeamMember[];
-}
+// interface TeamDetails {
+//   title: string;
+//   description: string;
+//   organizationId: string | null;
+//   id: string;
+//   leaderId: string;
+//   created_at: string;
+//   projects: TeamProjectLink[];
+//   members: TeamMember[];
+// }
 
 export const get_team_by_id = (teamId: string) => {
     const token = localStorage.getItem("access_token") || getCookie("access_token");
