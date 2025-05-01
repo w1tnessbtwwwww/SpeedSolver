@@ -2,13 +2,18 @@ import { useState, useRef, forwardRef, useImperativeHandle } from "react";
 import { Eye, EyeClosed } from 'lucide-react';
 import styles from './PasswordInput.module.css';
 
-const PasswordInput = forwardRef((props, ref) => {
+export interface PasswordInputRef {
+  value: string;
+  focus: () => void;
+}
+
+const PasswordInput = forwardRef<PasswordInputRef, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const inputField = useRef<HTMLInputElement>(null);
 
   const toggleShowPassword = (e: React.MouseEvent) => {
-    e.preventDefault(); // Предотвращаем действие по умолчанию
+    e.preventDefault();
     setShowPassword(c => !c);
   };
 

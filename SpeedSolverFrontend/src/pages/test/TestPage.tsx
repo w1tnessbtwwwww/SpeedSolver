@@ -1,11 +1,6 @@
-import PasswordInput from "@/components/passwordInput/PasswordInput"
-
 const TestPage = () => {
-  return (
-    <div>
-      <PasswordInput/>
-    </div>
-  )
+return <></>
+
 }
 
 export default TestPage
