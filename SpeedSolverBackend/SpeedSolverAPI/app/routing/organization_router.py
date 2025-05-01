@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.database.database import get_session
 from app.database.models.models import User
 from app.schema.request.organization.create_organization import CreateOrganization
+from app.schema.request.organization.update_organization import UpdateOrganization
 from app.security.jwtmanager import get_current_user
 from app.services.organization_service import OrganizationService
 
@@ -15,3 +16,7 @@ organization_router = APIRouter(
 @organization_router.post("/create")
 async def create_organization(organization: CreateOrganization, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await OrganizationService(session).create_organization(user.id, organization)
+
+@organization_router.put("/update/{organization_id}")
+async def update_organization(upd_organization: UpdateOrganization, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
+    return await OrganizationService(session).update_organization(user.id, upd_organization)

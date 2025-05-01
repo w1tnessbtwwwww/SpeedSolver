@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import glob
 
 from app.database.models.models import User
+from app.schema.response.user.read_user import ReadUser
 from app.schema.response.user.read_user_profile import ReadUserProfile
 from app.security.jwtmanager import get_current_user, oauth2_scheme
 
@@ -32,7 +33,7 @@ async def get_my_teams(user: User = Depends(get_current_user), session: AsyncSes
     return await UserService(session).get_all_teams(user.id)
 
 
-@account_router.get("/profile/get")
+@account_router.get("/profile/get", response_model=ReadUser)
 async def get_profile(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await UserProfileService(session).get_profile(user.id)
 

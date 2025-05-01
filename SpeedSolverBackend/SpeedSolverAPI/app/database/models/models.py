@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Date, DateTime, ForeignKey, func
+from sqlalchemy import Date, DateTime, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -26,8 +26,11 @@ class Objective(Base):
         default=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=7),
     )
 
+    responsible_person_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+
     author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
-    author: Mapped["User"] = relationship("User", back_populates="authored_objectives")
+    author: Mapped["User"] = relationship("User", back_populates="authored_objectives", foreign_keys=[author_id])
+    responsible_person: Mapped["User"] = relationship("User", back_populates="responsible_tasks", foreign_keys=[responsible_person_id])
 
     project: Mapped["Project"] = relationship("Project", back_populates="objectives")
     parent_objective: Mapped["Objective"] = relationship("Objective", back_populates="child_objectives", remote_side=[id])
@@ -129,6 +132,29 @@ class Team(Base):
     members: Mapped[list["TeamMember"]] = relationship("TeamMember", back_populates="team") # type: ignore
     projects: Mapped[list["TeamProject"]] = relationship("TeamProject", back_populates="team") # type: ignore
     moderators: Mapped[list["TeamModerator"]] = relationship("TeamModerator", back_populates="team") # type: ignore
+    team_roles: Mapped[list["CustomTeamRole"]] = relationship("CustomTeamRole", back_populates="team")
+    all_team_role_links: Mapped[list["LinkTeamRole"]] = relationship("LinkTeamRole", back_populates="team")
+
+class CustomTeamRole(Base):
+    __tablename__ = "custom_team_roles"
+
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    name: Mapped[String] = mapped_column(String(50))
+    team_id: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"), nullable=True)
+    color: Mapped[str] = mapped_column(String(12), default="#ffffff")
+
+    team: Mapped["Team"] = relationship("Team", back_populates="team_roles")
+
+
+class LinkTeamRole(Base):
+    __tablename__ = "links_team_roles"
+
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    team_id: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"))
+
+    user: Mapped["User"] = relationship("User", back_populates="all_roles")
+    team: Mapped["Team"] = relationship("Team", back_populates="all_team_role_links")
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
@@ -149,9 +175,10 @@ class EmailVerification(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), nullable=False)
     verification_code: Mapped[str] = mapped_column(default=str(generate_confirmation_code()))
-    created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.utcnow())
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
 
     user: Mapped["User"] = relationship("User", back_populates="verification")
+
     
 
 class User(Base):
@@ -174,7 +201,9 @@ class User(Base):
     teams_moderation: Mapped[List["TeamModerator"]] = relationship("TeamModerator", back_populates="user")
     projects_moderation: Mapped[List["ProjectModerator"]] = relationship("ProjectModerator", back_populates="user")
     created_projects: Mapped[List["Project"]] = relationship("Project", back_populates="creator")
-    authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author")
+    authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author", foreign_keys="Objective.author_id")
+    all_roles: Mapped[List["LinkTeamRole"]] = relationship("LinkTeamRole", back_populates="user")
+    responsible_tasks: Mapped[List["Objective"]] = relationship("Objective", back_populates="responsible_person", foreign_keys="Objective.responsible_person_id")
 
 
 class ProjectMember(Base):

@@ -1,11 +1,12 @@
 
-from sqlalchemy import UUID, insert, update
+from sqlalchemy import UUID, insert, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import User
 from app.database.repo.user_profile_repository import UserProfileRepository
 
+from app.database.repo.user_repository import UserRepository
 from app.schema.request.get_access import authorize, register
 from app.schema.request.account.updateprofile import UpdateProfile
 
@@ -22,7 +23,7 @@ class UserProfileService:
 
 
     async def get_profile(self, userId: UUID):
-        return await self._repo.get_by_filter_one(userId=userId)
+        return await UserRepository(self._session).get_by_id_with_profile(userId)
 
     async def update_profile(self, userId: UUID, **kwargs):
 
