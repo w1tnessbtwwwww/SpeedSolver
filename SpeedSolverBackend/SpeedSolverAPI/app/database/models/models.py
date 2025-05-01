@@ -1,12 +1,12 @@
 import datetime
 
-from sqlalchemy import Date, ForeignKey
+from sqlalchemy import Date, DateTime, ForeignKey, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declarative_base
 from sqlalchemy.dialects.postgresql import UUID
 
 import uuid
 
-from typing import List
+from typing import List, Optional
 
 from app.utils.verify_codes_generator.code_generator import generate_confirmation_code
 
@@ -18,12 +18,12 @@ class Objective(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
-    parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.id"), nullable=True)
+    parent_objectiveId: Mapped[UUID] = mapped_column(ForeignKey("objectives.id", ondelete='CASCADE'), nullable=True)
     projectId: Mapped[UUID] = mapped_column(UUID, ForeignKey("projects.id", ondelete='CASCADE'), nullable=False)
     
     created_at: Mapped[datetime.datetime] = mapped_column(default=datetime.datetime.now())
     deadline_date: Mapped[datetime.datetime] = mapped_column(
-        default=datetime.datetime.now() + datetime.timedelta(days=7),
+        default=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=7),
     )
 
     author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
@@ -43,6 +43,7 @@ class Organization(Base):
     leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     leader: Mapped["User"] = relationship("User", back_populates="organizations")
     teams: Mapped[List["Team"]] = relationship("Team", back_populates="organization") # type: ignore
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
 
 class Project(Base):
     __tablename__ = "projects"
@@ -63,6 +64,8 @@ class TeamModerator(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
+
 
     team: Mapped["Team"] = relationship("Team", back_populates="moderators") # type: ignore
     user: Mapped["User"] = relationship("User", back_populates="teams_moderation") # type: ignore
@@ -72,10 +75,26 @@ class TeamMember(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
+    
+    invited_by_request_id: Mapped[UUID] = mapped_column(ForeignKey("team_invitations.id", ondelete="CASCADE"), nullable=True)
+
+    invited_by_request: Mapped["TeamInvitation"] = relationship("TeamInvitation", back_populates="team_member")
 
     team: Mapped["Team"] = relationship("Team", back_populates="members") # type: ignore
     user: Mapped["User"] = relationship("User", back_populates="teams") # type: ignore
 
+class TeamInvitation(Base):
+    __tablename__ = "team_invitations"
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    invited_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    invited_by_leader_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
+
+    team_member: Mapped["TeamMember"] = relationship("TeamMember", back_populates="invited_by_request")
+    invited_user: Mapped["User"] = relationship("User", back_populates="team_invitations", foreign_keys="[TeamInvitation.invited_user_id]")
+    invited_by_leader: Mapped["User"] = relationship("User", foreign_keys="[TeamInvitation.invited_by_leader_id]")
+    team: Mapped["Team"] = relationship("Team")
 
 class TeamProject(Base):
     __tablename__ = "team_projects"
@@ -102,6 +121,8 @@ class Team(Base):
     description: Mapped[str] = mapped_column(nullable=True)
     leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
     organizationId: Mapped[UUID] = mapped_column(ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=True)
+
 
     organization: Mapped["Organization"] = relationship("Organization", back_populates="teams") # type: ignore
     leader: Mapped["User"] = relationship("User", back_populates="teams_lead")
@@ -118,6 +139,7 @@ class UserProfile(Base):
     birthdate: Mapped[Date] = mapped_column(Date, nullable=True, default=datetime.date.today())
     about: Mapped[str] = mapped_column(nullable=True)
     userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    avatar_path: Mapped[Optional[str]] = mapped_column()
 
     user: Mapped["User"] = relationship("User", back_populates="profile") # type: ignore
 
@@ -137,7 +159,7 @@ class User(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     email: Mapped[str] = mapped_column(nullable=True, unique=True)
     password: Mapped[str] = mapped_column()
-    registered: Mapped[Date] = mapped_column(Date, default=datetime.date.today(), nullable=True) 
+    registered: Mapped[DateTime] = mapped_column(DateTime, default=func.now(), nullable=True) 
     is_mail_verified: Mapped[bool] = mapped_column(default=False, nullable=False)
 
 
@@ -154,16 +176,6 @@ class User(Base):
     created_projects: Mapped[List["Project"]] = relationship("Project", back_populates="creator")
     authored_objectives: Mapped[List["Objective"]] = relationship("Objective", back_populates="author")
 
-class TeamInvitation(Base):
-    __tablename__ = "team_invitations"
-    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
-    invited_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    invited_by_leader_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    teamId: Mapped[UUID] = mapped_column(ForeignKey("teams.id"))
-
-    invited_user: Mapped["User"] = relationship("User", back_populates="team_invitations", foreign_keys="[TeamInvitation.invited_user_id]")
-    invited_by_leader: Mapped["User"] = relationship("User", foreign_keys="[TeamInvitation.invited_by_leader_id]")
-    team: Mapped["Team"] = relationship("Team")
 
 class ProjectMember(Base):
     __tablename__ = "project_members"

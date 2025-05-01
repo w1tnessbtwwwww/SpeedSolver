@@ -21,6 +21,35 @@ from app.security.jwttype import JWTType
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/access/authorize")
 
+async def native_current_user(token: str, session: AsyncSession) -> User:
+    payload = JWTManager().decode_token(token)
+    if not payload.success:
+        print("pizda")
+        raise HTTPException(
+            status_code=401,
+            detail=payload.error,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    username: str = payload.value.get("userId")
+    if username is None:
+        print("no id")
+        raise HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    print(username)
+    user = await UserRepository(session).get_by_id_with_profile(id=username)
+    if user is None:
+        print("not foudn user")
+        raise HTTPException(
+            status_code=401,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
 async def get_current_user(token: str = Depends(oauth2_scheme), session: AsyncSession = Depends(get_session)) -> User:
     
 
