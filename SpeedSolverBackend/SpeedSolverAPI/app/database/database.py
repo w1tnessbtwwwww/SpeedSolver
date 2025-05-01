@@ -15,7 +15,8 @@ from app.database.models.models import Base
 async def get_engine() -> AsyncEngine:
     return create_async_engine(str(settings.db_url))
 
-
+def get_engine_sync() -> AsyncEngine:
+    return create_async_engine(str(settings.db_url))
 
 async def get_session():
     async_session = sessionmaker(await get_engine(), class_=AsyncSession, expire_on_commit=False)

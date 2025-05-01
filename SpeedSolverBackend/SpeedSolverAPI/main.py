@@ -1,13 +1,18 @@
+import asyncio
 from datetime import datetime
 import json
 from typing import List
 from uuid import UUID
+
 from fastapi import Depends, FastAPI, HTTPException, WebSocket, WebSocketDisconnect, status
 from fastapi.responses import RedirectResponse as Redirect
 from fastapi.staticfiles import StaticFiles
 
-from app.database.database import get_session, create_tables
+
+from app.admin.user_admin import UserAdmin
+from app.database.database import get_engine_sync, get_session, create_tables
 from app.database.models.models import User
+from app.exc.bad_color import BadColor
 from app.exc.bad_email import BadEmail
 from app.routing.main_router import main_router
 
@@ -18,12 +23,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.services.project_service import ProjectService
 from app.utils.websocket.events import WebSocketEvent
-
+from sqladmin import Admin
 api = FastAPI(
     title="SpeedSolverAPI",
     description="The API docs for SpeedSolver.",
     version="v1",
 )
+
+admin = Admin(api, get_engine_sync())
+admin.add_view(UserAdmin)
 
 
 api.add_middleware (
@@ -44,7 +52,15 @@ api.include_router(main_router)
 api.mount("/speedsolver-avatars", StaticFiles(directory="speedsolver-avatars"), name="avatars")
 
 @api.exception_handler(BadEmail)
-async def bad_email(request, exc: BadEmail):
+async def bad_email_exc_handler(request, exc: BadEmail):
+    raise HTTPException(
+        status_code=422,
+        detail=exc.message
+    )
+
+
+@api.exception_handler(BadColor)
+async def bad_color_exc_handler(request, exc: BadColor):
     raise HTTPException(
         status_code=422,
         detail=exc.message

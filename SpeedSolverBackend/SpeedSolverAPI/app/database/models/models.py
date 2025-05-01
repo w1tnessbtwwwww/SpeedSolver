@@ -141,7 +141,7 @@ class CustomTeamRole(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     name: Mapped[String] = mapped_column(String(50))
     team_id: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"), nullable=True)
-    color: Mapped[str] = mapped_column(String(12), default="#ffffff")
+    color: Mapped[str] = mapped_column(default=str("#ffffff"), nullable=True)
 
     team: Mapped["Team"] = relationship("Team", back_populates="team_roles")
 

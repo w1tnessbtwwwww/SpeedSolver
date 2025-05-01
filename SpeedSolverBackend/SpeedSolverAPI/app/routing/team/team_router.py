@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.database import get_session
 from app.database.models.models import User
+from app.routing.team.team_roles_router import team_roles_router
 from app.schema.request.team.create_team import CreateTeam
 from app.schema.request.team.update_team import UpdateTeam
 from app.schema.response.team.team import ReadTeam
@@ -19,19 +20,17 @@ team_router = APIRouter(
     tags=["Team"]
 )
 
-team_router.include_router(team_invites_router)
-team_router.include_router(team_members_router)
 
 
-@team_router.get("/about/{team_id}", response_model=List[ReadTeam])
+@team_router.get("/about/{team_id}", response_model=List[ReadTeam], summary="Получить всю информацию о команде")
 async def team_about(team_id: str, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await TeamService(session).get_team(team_id, user.id)
 
-@team_router.post("/create")
+@team_router.post("/create", summary="Создать команду")
 async def create_team(team: CreateTeam, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await TeamService(session).create_team(team, user.id)
 
-@team_router.patch("/edit/{team_id}")
+@team_router.patch("/edit/{team_id}", summary="Обновить информацию о команде")
 async def edit_team(team_id: UUID, updates: UpdateTeam, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     if not await TeamService(session).is_user_team_moderator(user.id, team_id):
         raise HTTPException(
@@ -40,7 +39,7 @@ async def edit_team(team_id: UUID, updates: UpdateTeam, session: AsyncSession = 
         )
     return await TeamService(session).update_team(team_id, updates)
 
-@team_router.delete("/delete/{team_id}")
+@team_router.delete("/delete/{team_id}", summary="Удалить команду")
 async def delete_team(team_id: UUID, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     if not await TeamService(session).is_user_leader(user.id, team_id):
         raise HTTPException(
@@ -48,3 +47,7 @@ async def delete_team(team_id: UUID, session: AsyncSession = Depends(get_session
             detail="У вас нет прав на удаление данной команды."
         )
     return await TeamService(session).repo.delete_by_id(team_id)
+
+team_router.include_router(team_invites_router)
+team_router.include_router(team_members_router)
+team_router.include_router(team_roles_router)

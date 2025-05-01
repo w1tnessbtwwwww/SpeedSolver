@@ -19,7 +19,7 @@ verification_router = APIRouter(
     tags=["Verification"]
 )
 
-@verification_router.post("/resend")
+@verification_router.post("/resend", summary="Запросить код подтверждения снова")
 async def resend_verification(email: ResendCode, session: AsyncSession = Depends(get_session)):
     user = await UserService(session).get_by_email(email.email)
     if not user.success:
@@ -33,7 +33,7 @@ async def resend_verification(email: ResendCode, session: AsyncSession = Depends
     return {
         "message": "Письмо успешно отправлено."
     }
-@verification_router.post("/confirm")
+@verification_router.post("/confirm", summary="Подтвердить почту по коду")
 async def confirm_verification(confirmRequest: EmailConfirmation, session: AsyncSession = Depends(get_session)):
     user = await UserService(session).get_by_email(confirmRequest.email)
     if not user.success:

@@ -91,14 +91,20 @@ class TeamService:
         return True if exec.scalars().first() is not None else False
 
     async def is_user_leader(self, user_id: UUID, team_id: UUID) -> bool:
-        team = await self.repo.get_by_id(team_id)
+        print(team_id)
+        team = await self.repo.get_by_filter_one(id=team_id)
+        if not team:
+            raise HTTPException(
+                status_code=400,
+                detail="Такая команда не найдена"
+            )
         if team.leaderId == user_id:
             return True
         return False
 
     async def is_user_team_moderator(self, user_id: UUID, team_id: UUID) -> bool:
 
-        if await self.is_user_leader(user_id, team_id):
+        if await self.is_user_leader(user_id=user_id, team_id=team_id):
             return True
 
         moderator_query = (

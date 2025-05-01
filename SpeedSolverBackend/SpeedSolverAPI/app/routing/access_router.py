@@ -31,7 +31,7 @@ auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 
 
-@auth_router.post("/register")
+@auth_router.post("/register", summary="Зарегистрироваться")
 async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
     registered = await UserService(session).register(registerRequest)
     if not registered.success:
@@ -41,7 +41,7 @@ async def register(registerRequest: RegisterRequest, session: AsyncSession = Dep
     }
 
 
-@auth_router.post("/authorize")
+@auth_router.post("/authorize", summary="Авторизоваться")
 async def authorize(
     response: Response,
     username: str = Form(), 
@@ -105,7 +105,7 @@ async def refresh_access_token(request: Request):
     
     return jwt_manager.encode_token({ "userId": str(user.userId), "email": user.email }, token_type=JWTType.ACCESS)
 
-@auth_router.get("/refresh")
+@auth_router.get("/refresh", summary="Обновить access_token через refresh_token")
 async def refresh(token: str = Depends(refresh_access_token)):
     response = JSONResponse(content = {
         "access_token": token

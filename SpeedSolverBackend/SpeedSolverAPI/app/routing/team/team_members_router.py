@@ -15,6 +15,6 @@ team_members_router = APIRouter(
 )
 
 
-@team_members_router.get("/{team_id}/get_all", response_model=List[ReadUser])
+@team_members_router.get("/{team_id}/get_all", response_model=List[ReadUser], summary="Получить всех участников команды")
 async def get_all_team_members(team_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await TeamService(session).get_all_members(team_id, user.id)

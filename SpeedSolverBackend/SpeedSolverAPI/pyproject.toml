@@ -22,6 +22,10 @@ python-multipart = "^0.0.20"
 alembic = "^1.14.0"
 multipledispatch = "^1.0.0"
 websockets = "^15.0.1"
+flask = "^3.1.0"
+flask-admin = "^1.6.1"
+flask-sqlalchemy = "^3.1.1"
+sqladmin = {extras = ["full"], version = "^0.20.1"}
 
 
 [build-system]

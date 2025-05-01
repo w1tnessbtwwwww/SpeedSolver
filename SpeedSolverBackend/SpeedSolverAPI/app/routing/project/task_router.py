@@ -14,10 +14,10 @@ task_router = APIRouter(
 )
 
 
-@task_router.post("/create/{project_id}")
+@task_router.post("/create/{project_id}", summary="Создать задачу для проекта")
 async def create_task(project_id: UUID, task_data: CreateObjective, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await ProjectService(session).create_task(project_id, user.id, task_data)
 
-@task_router.get("/all/{project_id}")
+@task_router.get("/all/{project_id}", summary="Получить все задачи и подзадачи проекта")
 async def get_all_tasks(project_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await ProjectService(session).get_all_tasks(project_id, user.id)

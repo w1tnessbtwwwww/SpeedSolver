@@ -15,15 +15,15 @@ project_router = APIRouter(
 )
 
 
-@project_router.post("/create/{team_id}")
+@project_router.post("/create/{team_id}", summary="Создать проект")
 async def create_project(team_id: UUID, project_data: CreateProject, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await ProjectService(session).create_project(user.id, team_id, project_data)
 
-@project_router.post("/invites/accept/{invite_request_id}")
+@project_router.post("/invites/accept/{invite_request_id}", summary="Принять приглашение в проект")
 async def join_project(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     pass
 
-@project_router.delete("/invites/decline/{invite_request_id}")
+@project_router.delete("/invites/decline/{invite_request_id}", summary="Принять приглашение в команду")
 async def decline_invite(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     pass
 

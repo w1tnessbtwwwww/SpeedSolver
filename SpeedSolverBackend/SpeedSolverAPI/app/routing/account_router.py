@@ -28,20 +28,20 @@ account_router = APIRouter(
 # async def get_my_organizations(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
 #    return await OrganizationService(session).get_all_user_organizations(user.id)
 
-@account_router.get("/teams/get_all")
+@account_router.get("/teams/get_all", summary="Получить все команды где админ или участник")
 async def get_my_teams(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await UserService(session).get_all_teams(user.id)
 
 
-@account_router.get("/profile/get", response_model=ReadUser)
+@account_router.get("/profile/get", response_model=ReadUser, summary="Получить всю информацию о авторизованном пользователе")
 async def get_profile(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await UserProfileService(session).get_profile(user.id)
 
-@account_router.put("/profile/update")
+@account_router.put("/profile/update", summary="Обновить информацию о профиле")
 async def update_profile(updateRequest: UpdateProfile, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await UserProfileService(session).update_profile(user.id, **updateRequest.model_dump())
 
-@account_router.put("/profile/avatar/update", response_model=ReadUserProfile)
+@account_router.put("/profile/avatar/update", response_model=ReadUserProfile, summary="Обновить аватарку")
 async def upload_avatar(avatar: UploadFile = File(...), user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):    
     if not avatar.content_type.startswith("image/"):
         raise HTTPException(
@@ -69,7 +69,7 @@ async def upload_avatar(avatar: UploadFile = File(...), user: User = Depends(get
 
     
    
-@account_router.delete("/delete")
+@account_router.delete("/delete", summary="Удалить свой аккаунт")
 async def delete_account(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     result = await UserService(session).delete_user(user.userId)
 

@@ -13,10 +13,10 @@ organization_router = APIRouter(
     tags=["Организации"]
 )
 
-@organization_router.post("/create")
+@organization_router.post("/create", summary="Создать организацию")
 async def create_organization(organization: CreateOrganization, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await OrganizationService(session).create_organization(user.id, organization)
 
-@organization_router.put("/update/{organization_id}")
+@organization_router.put("/update/{organization_id}", summary="Обновить организацию")
 async def update_organization(upd_organization: UpdateOrganization, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await OrganizationService(session).update_organization(user.id, upd_organization)
