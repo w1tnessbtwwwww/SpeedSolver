@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { register } from "@/app/axios_api";
 import PasswordInput, { PasswordInputRef } from "@/components/passwordInput/PasswordInput";
+import {Link} from 'react-router-dom'
 
 export const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
@@ -55,6 +56,11 @@ export const RegisterPage: React.FC = () => {
                 >
                     {isLoading ? "Регистрация..." : "Зарегистрироваться"}
                 </button>
+                <Link
+                    className="text-white text-center hover:underline"
+                    to='/login'>
+                        Есть аккаунт? Войти
+                </Link>
             </form>
             <ToastContainer/>
         </div>
