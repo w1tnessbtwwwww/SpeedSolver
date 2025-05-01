@@ -1,6 +1,6 @@
 from abc import ABC
 
-from sqlalchemy import select, delete, update, insert
+from sqlalchemy import and_, select, delete, update, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 class AbstractRepository(ABC):
@@ -36,6 +36,15 @@ class AbstractRepository(ABC):
     async def delete_by_id(self, id):
         result = await self._session.execute(delete(self.model).where(self.model.id == id))
         return result.rowcount
+
+    async def delete_by_filter_id(self, id, **kwargs):
+        exec = await self._session.execute(delete(self.model).where(
+            and_(
+                self.model.id == id,
+                **kwargs
+            )
+        ))
+        return exec.rowcount
 
     async def get_by_filter_all(self, **kwargs):
         query = select(self.model).filter_by(**kwargs)
