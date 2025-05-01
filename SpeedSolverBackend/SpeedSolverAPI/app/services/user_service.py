@@ -34,11 +34,9 @@ class UserService:
     async def get_all_teams(self, user_id: UUID):
         query = (
             select(Team)
-            .options(defer(Team.leaderId))
-            .select_from(TeamMember)
+            .join_from(Team, TeamMember, Team.id == TeamMember.teamId)
             .where(TeamMember.userId == user_id)
-            .options(selectinload(Team.leader), 
-                     selectinload(Team.organization).defer(Organization.id))
+            .options(selectinload(Team.leader).selectinload(User.profile), selectinload(Team.organization))       
         )
 
         exec = await self._session.execute(query)

@@ -3,12 +3,15 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import and_, select
 
-from app.database.models.models import TeamMember, TeamModerator, User
+from app.database.models.models import Project, Team, TeamMember, TeamModerator, TeamProject, User
 from app.database.repo.team_invitation_repository import TeamInvitationRepository
 from app.database.repo.team_member_repository import TeamMemberRepository
 from app.database.repo.team_repository import TeamRepository
 from app.schema.request.team.create_team import CreateTeam
 from app.schema.request.team.update_team import UpdateTeam
+
+from sqlalchemy.orm import selectinload
+
 from sqlalchemy.exc import IntegrityError
 from app.utils.logger.telegram_bot.telegram_logger import logger
 class TeamService:
@@ -16,14 +19,76 @@ class TeamService:
         self.session = session
         self.repo = TeamRepository(session)
         
+
+    async def get_team(self, team_id: UUID, user_id: UUID):
+        if not await self.is_user_team_member(user_id, team_id):
+            raise HTTPException(
+                status_code=403,
+                detail="У вас нет доступа к получению информации о команде"
+            )
+        
+        query = (
+            select(Team)
+            .where(Team.id == team_id)
+            .options(selectinload(Team.members).selectinload(TeamMember.user).selectinload(User.profile), 
+                     selectinload(Team.projects).selectinload(TeamProject.project))
+        )
+        exec = await self.session.execute(query)
+        result = exec.scalars().all()
+        return result
+
+    async def get_all_projects(self, team_id: UUID, user_id: UUID):
+        if not await self.is_user_team_member(user_id, team_id):
+            raise HTTPException(
+                status_code=403,
+                detail="У вас нет прав на просмотр проектов команды."
+            )
+        
+        query = (
+            select(Project)
+            .select_from(TeamProject)
+            .where(TeamProject.teamId == team_id)
+        )
+
+        exec = await self.session.execute(query)
+        return exec.scalars().all()
+
+    async def get_all_members(self, team_id: UUID, user_id: UUID):
+        if not await self.is_user_team_member(user_id, team_id):
+            raise HTTPException(
+                status_code=403,
+                detail="У вас нет прав на просмотр участников команды."
+            )
+        
+        query = (
+            select(User)
+            .join_from(TeamMember, User, TeamMember.teamId == team_id)
+            .options(selectinload(User.profile))
+        )
+
+        exec = await self.session.execute(query)
+        return exec.scalars().all()
+
     async def invite_user(self, team_id: UUID, user_id: UUID, moderator_id: UUID):
+        
         if not await self.is_user_team_moderator(moderator_id, team_id):
             raise HTTPException(
                 status_code=403,
                 detail="У вас нет прав на приглашение в команду."
             )
         
-        await TeamInvitationRepository(self.session).create(teamId=team_id, userId=user_id)
+    
+    async def is_user_team_member(self, user_id: UUID, team_id: UUID):
+        query = (
+            select(TeamMember)
+            .where(and_(
+                TeamMember.userId == user_id,
+                TeamMember.teamId == team_id
+            ))
+        )
+
+        exec = await self.session.execute(query)
+        return True if exec.scalars().first() is not None else False
 
     async def is_user_leader(self, user_id: UUID, team_id: UUID) -> bool:
         team = await self.repo.get_by_id(team_id)
@@ -59,6 +124,7 @@ class TeamService:
         try:
             created_team = await self.repo.create(leaderId=leader_id, **team.model_dump())
             await TeamMemberRepository(self.session).create(teamId=created_team.id, userId=leader_id)
+            return created_team
         except IntegrityError as e:
             logger.error("Произошла ошибка внесения данных в базу данных", str(e))
             raise HTTPException(
