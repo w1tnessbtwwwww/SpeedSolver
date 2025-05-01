@@ -16,9 +16,9 @@ interface Project {
 }
 
 const Projects = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+const [projects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showOnlyAdmin, setShowOnlyAdmin] = useState(false);
