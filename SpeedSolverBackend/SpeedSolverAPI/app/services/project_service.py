@@ -24,6 +24,9 @@ class ProjectService:
         self._repo: ProjectRepository = ProjectRepository(session)
         self._objRepo: ObjectiveRepository = ObjectiveRepository(session)
 
+    async def update_task():
+        pass
+
     async def build_objective_tree(self, objective):
         objective_dict = {
             "id": objective.id,
