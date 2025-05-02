@@ -144,7 +144,7 @@ class CustomTeamRole(Base):
     color: Mapped[str] = mapped_column(default=str("#ffffff"), nullable=True)
 
     team: Mapped["Team"] = relationship("Team", back_populates="team_roles")
-
+    bearers: Mapped[List["LinkTeamRole"]] = relationship("LinkTeamRole", back_populates="role")
 
 class LinkTeamRole(Base):
     __tablename__ = "links_team_roles"
@@ -152,9 +152,10 @@ class LinkTeamRole(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     team_id: Mapped[UUID] = mapped_column(ForeignKey("teams.id", ondelete="CASCADE"))
-
+    role_id: Mapped[UUID] = mapped_column(ForeignKey("custom_team_roles.id", ondelete="CASCADE"))
     user: Mapped["User"] = relationship("User", back_populates="all_roles")
     team: Mapped["Team"] = relationship("Team", back_populates="all_team_role_links")
+    role: Mapped["CustomTeamRole"] = relationship("CustomTeamRole", back_populates="bearers")
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"

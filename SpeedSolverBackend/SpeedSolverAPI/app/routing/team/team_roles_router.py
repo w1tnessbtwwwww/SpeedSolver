@@ -25,3 +25,4 @@ async def update_team_role(role_id: str, updates: UpdateRole, session: AsyncSess
 @team_roles_router.delete("/{role_id}/delete", summary="Удалить роль внутри команды")
 async def update_team_role(role_id: str, session: AsyncSession = Depends(get_session), user: User = Depends(get_current_user)):
     return await CustomTeamRoleService(session).delete_team_role(role_id, user.id)
+
