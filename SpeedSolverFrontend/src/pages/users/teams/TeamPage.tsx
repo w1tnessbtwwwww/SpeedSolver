@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { get_team_by_id } from '@/app/axios_api';
 import { Button } from '@/components/ui/button';
-import { Undo2 } from 'lucide-react';
+import { Undo2, Plus } from 'lucide-react';
 import Card from '@/components/card/Card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface TeamMemberProfile {
   surname: string;
@@ -65,6 +74,11 @@ const TeamPage = () => {
   const [team, setTeam] = useState<Team | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newProject, setNewProject] = useState({
+    title: '',
+    description: '',
+  });
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -92,6 +106,36 @@ const TeamPage = () => {
 
     fetchTeam();
   }, [id, navigate]);
+
+  const handleCreateProject = async () => {
+    try {
+      const response = await fetch(`https://api.speedsolver.ru/v1/projects/create/${id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
+        body: JSON.stringify({
+          title: newProject.title,
+          description: newProject.description,
+          auto_invite: [] // Можно добавить логику выбора пользователей позже
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при создании проекта');
+      }
+
+      // Перезагружаем данные команды
+      const data = await get_team_by_id(id!);
+      setTeam(data);
+      setIsDialogOpen(false);
+      setNewProject({ title: '', description: '' });
+    } catch (err) {
+      console.error('Ошибка при создании проекта:', err);
+      setError('Ошибка при создании проекта');
+    }
+  };
 
   if (isLoading) return <div>Загрузка...</div>;
   if (error) return <div>{error}</div>;
@@ -133,7 +177,46 @@ const TeamPage = () => {
         </Card>
 
         <Card className="mb-4">
-          <h2 className="text-white text-lg font-semibold">Проекты команды</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-white text-lg font-semibold">Проекты команды</h2>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Создать проект
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-neutral-800 text-white">
+                <DialogHeader>
+                  <DialogTitle>Создать новый проект</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <div>
+                    <label className="block mb-2">Название проекта</label>
+                    <Input
+                      value={newProject.title}
+                      onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                      className="bg-neutral-700 border-neutral-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block mb-2">Описание</label>
+                    <Textarea
+                      value={newProject.description}
+                      onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                      className="bg-neutral-700 border-neutral-600"
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleCreateProject}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    Создать
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
           <div className="space-y-2">
             {team.projects.length > 0 ? (
                 team.projects.map(projectLink => (
