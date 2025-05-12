@@ -1,6 +1,7 @@
 from typing import Optional
+from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy.orm import selectinload
 from app.security.hasher import verify_password
 
 from app.utils.result import Result, err, success
@@ -13,6 +14,17 @@ from sqlalchemy import delete, select, update, insert
 
 class UserRepository(AbstractRepository):
     model = User
+
+    async def get_by_id_with_profile(self, id: UUID):
+        query = (
+            select(self.model)
+            .where(self.model.id == id)
+            .options(selectinload(self.model.profile))
+        )
+
+        result = await self._session.execute(query)
+        user = result.scalars().first()
+        return user
 
     async def get_moderation_teams(self, userId: str):
         query = (

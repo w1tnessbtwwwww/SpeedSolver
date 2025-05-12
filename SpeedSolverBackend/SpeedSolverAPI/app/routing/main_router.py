@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.routing.project_router import project_router
+from app.routing.project.project_router import project_router
 from app.routing.team.team_router import team_router
 from app.routing.organization_router import organization_router
 from app.routing.access_router import auth_router

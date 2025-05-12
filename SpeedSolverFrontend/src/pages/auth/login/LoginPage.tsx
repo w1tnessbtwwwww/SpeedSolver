@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import PasswordInput, { PasswordInputRef } from "@/components/passwordInput/PasswordInput";
 import { useNavigate } from "react-router-dom";
 import { Blob } from "@/components/blob/Blob";
+import { Link } from "react-router-dom";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -43,6 +44,11 @@ export const LoginPage = () => {
                         Авторизоваться
                     </button> 
                 </div>
+                <Link
+                    className="text-white text-center hover:underline"
+                    to='/register'>
+                        Нет аккаунта? Создать аккаунт
+                </Link>
             </form>
             <ToastContainer />
         </div> 

@@ -14,57 +14,53 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-interface TeamMemberProfile {
+interface UserProfile {
   surname: string;
   name: string;
-  birthdate: string;
-  userId: string;
-  avatar_path: string | null;
   patronymic: string;
-  id: string;
   about: string;
+  birthdate: string;
+  avatar_path: string | null;
 }
 
-interface TeamMemberUser {
-  password: string;
-  is_mail_verified: boolean;
+interface User {
   id: string;
   email: string;
-  registered: string;
-  profile: TeamMemberProfile;
+  is_mail_verified: boolean;
+  profile: UserProfile | null;
 }
 
 interface TeamMember {
   id: string;
-  invited_by_request_id: string | null;
-  userId: string;
-  teamId: string;
-  user: TeamMemberUser;
+  user: User;
 }
 
-interface TeamProject {
+interface ProjectCreator {
   id: string;
-  creator_id: string;
+  email: string;
+  is_mail_verified: boolean;
+  profile: UserProfile | null;
+}
+
+interface Project {
+  id: string;
   title: string;
   description: string;
   created_at: string;
+  creator: ProjectCreator;
 }
 
-interface TeamProjectLink {
-  teamId: string;
-  projectId: string;
+interface ProjectLink {
   id: string;
-  project: TeamProject;
+  project: Project;
 }
 
 interface Team {
+  id: string;
   title: string;
   description: string;
-  organizationId: string | null;
-  id: string;
-  leaderId: string;
   created_at: string;
-  projects: TeamProjectLink[];
+  projects: ProjectLink[];
   members: TeamMember[];
 }
 
@@ -156,7 +152,7 @@ const TeamPage = () => {
 
       <div>
         <Card className="mb-4">
-          <h2 className="text-white text-lg font-semibold ">Описание</h2>
+          <h2 className="text-white text-lg font-semibold">Описание</h2>
           <p className="text-white">{team.description}</p>
         </Card>
         
@@ -165,11 +161,17 @@ const TeamPage = () => {
           <div className="space-y-2">
             {team.members.map(member => (
               <div key={member.id} className="text-white">
-                {member.user.profile.name}{' '}
-                {member.user.profile.surname}
+                {member.user.profile ? (
+                  <>
+                    {member.user.profile.name}{' '}
+                    {member.user.profile.surname}
+                  </>
+                ) : (
+                  'Профиль не заполнен'
+                )}
                 <br/>
                 <span className='text-neutral-600'>
-                    {member.user.email}    
+                  {member.user.email}    
                 </span>
               </div>
             ))}
@@ -219,21 +221,22 @@ const TeamPage = () => {
           </div>
           <div className="space-y-2">
             {team.projects.length > 0 ? (
-                team.projects.map(projectLink => (
-                    <div key={projectLink.id} className="text-white">
-                        <h3 className="font-medium">{projectLink.project.title}</h3>
-                        <p className="text-sm text-gray-400">{projectLink.project.description}</p>
-                    </div>
-                ))
+              team.projects.map(projectLink => (
+                <div key={projectLink.id} className="text-white">
+                  <h3 className="font-medium">{projectLink.project.title}</h3>
+                  <p className="text-sm text-gray-400">{projectLink.project.description}</p>
+                </div>
+              ))
             ) : (
-                <p className="text-white">Нет проектов</p>
+              <p className="text-white">Нет проектов</p>
             )}
           </div>
         </Card>
-        
       </div>
       <div className='text-right'>
-        <p className="text-neutral-600 text-sm">Дата создания: {new Date(team.created_at).toLocaleDateString()}</p>
+        <p className="text-neutral-600 text-sm">
+          Дата создания: {new Date(team.created_at).toLocaleDateString()}
+        </p>
       </div>
     </div>
   );
