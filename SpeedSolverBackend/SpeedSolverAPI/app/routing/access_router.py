@@ -31,6 +31,8 @@ auth_router = APIRouter(prefix="/access", tags=["System Access"])
 
 
 
+
+
 @auth_router.post("/register", summary="Зарегистрироваться")
 async def register(registerRequest: RegisterRequest, session: AsyncSession = Depends(get_session)):
     registered = await UserService(session).register(registerRequest)

@@ -1,12 +1,12 @@
 
 from typing import List, Sequence
 from uuid import UUID
-from sqlalchemy import select
+from sqlalchemy import or_, select
 from sqlalchemy.orm import selectinload, defer
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.models import Organization, Team, TeamMember, User, UserProfile
+from app.database.models.models import Organization, Project, ProjectInvitation, Team, TeamMember, User, UserProfile
 
 from app.database.repo.user_repository import UserRepository
 
@@ -30,6 +30,32 @@ class UserService:
         self._session = session
         self._repo: UserRepository = UserRepository(session)
 
+
+    async def find_user(self, param: str):
+        query = (
+            select(User)
+            .outerjoin(UserProfile, UserProfile.userId == User.id)
+            .where(or_(
+                User.email.like(f"%{param}%"),
+                UserProfile.name.like(f"%{param}%"),
+                UserProfile.surname.like(f"%{param}%"),
+                UserProfile.patronymic.like(f"%{param}%")
+            ))
+            .options(selectinload(User.profile))
+        )
+        result = await self._session.execute(query)
+        return result.scalars().all()
+
+    async def get_all_project_invites(self, user_id: UUID):
+        query = (
+            select(ProjectInvitation)
+            .where(ProjectInvitation.invited_user_id == user_id)
+            .options(selectinload(ProjectInvitation.project).selectinload(Project.creator).selectinload(User.profile))
+        )
+
+        result = await self._session.execute(query)
+        invites = result.scalars().all()
+        return invites
 
     async def get_all_teams(self, user_id: UUID):
         query = (

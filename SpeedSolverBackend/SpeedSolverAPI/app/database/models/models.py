@@ -26,9 +26,9 @@ class Objective(Base):
         default=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=7),
     )
 
-    responsible_person_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+    responsible_person_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
 
-    author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=False)
+    author_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     author: Mapped["User"] = relationship("User", back_populates="authored_objectives", foreign_keys=[author_id])
     responsible_person: Mapped["User"] = relationship("User", back_populates="responsible_tasks", foreign_keys=[responsible_person_id])
 
@@ -122,7 +122,7 @@ class Team(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     title: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column(nullable=True)
-    leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id"), nullable=True)
+    leaderId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     organizationId: Mapped[UUID] = mapped_column(ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now(), nullable=True)
 
@@ -220,6 +220,7 @@ class ProjectInvitation(Base):
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     invited_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
     invited_by_leader_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'))
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
     projectId: Mapped[UUID] = mapped_column(ForeignKey("projects.id", ondelete='CASCADE'))
 
     invited_user: Mapped["User"] = relationship("User", back_populates="project_invitations", foreign_keys="[ProjectInvitation.invited_user_id]")

@@ -26,3 +26,7 @@ async def get_all_tasks(project_id: UUID, user: User = Depends(get_current_user)
 @task_router.patch("/{task_id}/update", summary="Обновить информацию о задаче")
 async def update_task(task_id: UUID, updates: UpdateObjective, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await ProjectService(session).update_task(task_id, user.id, updates)
+
+@task_router.get("/{task_id}/get", summary="Получить информацию о задаче")
+async def get_task(task_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    return await ProjectService(session).get_task(task_id, user.id)

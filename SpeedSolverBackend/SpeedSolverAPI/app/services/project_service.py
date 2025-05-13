@@ -1,4 +1,5 @@
 from collections import defaultdict
+import datetime
 from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import and_, func, select
@@ -6,7 +7,7 @@ from sqlalchemy.orm import selectinload, joinedload, aliased
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.models.models import Objective, Project, ProjectModerator, User, UserProfile
+from app.database.models.models import Objective, Project, ProjectModerator, Team, TeamProject, User, UserProfile
 
 from app.database.repo.objective_repository import ObjectiveRepository
 from app.database.repo.project_invitation_repository import ProjectInvitationRepository
@@ -27,6 +28,58 @@ class ProjectService:
     async def update_task():
         pass
 
+    async def accept_invite(self, invite_request_id: UUID, user_id: UUID):
+        current_invite = await ProjectInvitationRepository(self._session).get_by_filter_one(id=invite_request_id)
+
+        team_query = (
+            select(Team)
+            .select_from(TeamProject)
+            .where(TeamProject.projectId == current_invite.projectId)
+        )
+
+        result = await self._session.execute(team_query)
+        team = result.scalars().first()
+
+        if not await TeamService(self._session).is_user_team_member(team.id, user_id):
+            raise HTTPException(status_code=403, detail="Вы не являетесь участником команды")
+        if current_invite.created_at + datetime.timedelta(days=1) < datetime.datetime.now(tz=datetime.timezone.utc):
+            raise HTTPException(status_code=400, detail="Приглашение более не действительно")
+        
+        current_member = await ProjectMembersRepository(self._session).get_by_filter_one(projectId=current_invite.projectId, userId=user_id)
+        if current_member:
+            raise HTTPException(status_code=400, detail="Пользователь уже состоит в проекте")
+        
+        return await ProjectMembersRepository(self._session).create(projectId=current_invite.projectId, userId=user_id)
+    
+    async def decline_invite(self, invite_request: UUID, user_id: UUID):
+        team_query = (
+            select(Team)
+            .select_from(TeamProject)
+            .where(TeamProject.projectId == current_invite.projectId)
+        )
+
+        result = await self._session.execute(team_query)
+        team = result.scalars().first()
+
+        if not await TeamService(self._session).is_user_team_member(team.id, user_id):
+            raise HTTPException(status_code=403, detail="Вы не являетесь участником команды")
+        current_invite = await ProjectInvitationRepository(self._session).get_by_filter_one(id=invite_request)
+        if current_invite.created_at + datetime.timedelta(days=1) < datetime.datetime.now(tz=datetime.timezone.utc):
+            raise HTTPException(status_code=400, detail="Приглашение более не действительно")
+        
+        return await ProjectInvitationRepository(self._session).delete_by_id(invite_request)
+
+    async def invite_user(self, project_id: UUID, user_id: UUID, moderator_id: UUID):
+        if not await self.is_user_project_moderator(project_id, moderator_id):
+            raise HTTPException(status_code=403, detail="Вы не являетесь модератором проекта")
+        
+        current_invite = await ProjectInvitationRepository(self._session).get_by_filter_one(invited_user_id=user_id, invited_by_leader_id=moderator_id, projectId=project_id)
+        if current_invite.created_at + datetime.timedelta(days=1) < datetime.datetime.now(tz=datetime.timezone.utc):
+            raise HTTPException(status_code=400, detail="Приглашение более не действительно")
+        
+        return await ProjectInvitationRepository(self._session).create(invited_user_id=user_id, invited_by_leader_id=moderator_id, projectId=project_id)
+
+
     async def build_objective_tree(self, objective):
         objective_dict = {
             "id": objective.id,
@@ -36,13 +89,40 @@ class ProjectService:
             "deadline_date": objective.deadline_date,
             "author": {
                 "id": objective.author.id,
-                "name": objective.author.profile.name,
+                "profile": {
+                    "fullname": f"{objective.author.profile.surname} {objective.author.profile.name} {objective.author.profile.patronymic}",
+                } if objective.author.profile else None,
+                
             },
             "child_objectives": []
         }
         for child in objective.child_objectives:
             objective_dict["child_objectives"].append(await self.build_objective_tree(child))
         return objective_dict
+
+    async def get_task(self, task_id: UUID, user_id: UUID):
+        task = await self._objRepo.get_by_id(task_id)
+
+        if not await self.is_user_project_member(task.projectId, user_id):
+            raise HTTPException(
+                status_code=403,
+                detail="Вы не являетесь участником проекта",
+            )
+ 
+        query = (
+            select(Objective)
+            .where(Objective.id == task_id)
+            .options(selectinload(Objective.author).selectinload(User.profile),
+            selectinload(Objective.child_objectives))
+        )
+
+        exec = await self._session.execute(query)
+        objective = exec.scalars().first()
+
+
+        task_info = await self.build_objective_tree(objective)
+
+        return task_info
 
     async def get_all_tasks(self, project_id: UUID, user_id: UUID):
         if not await self.is_user_project_member(project_id, user_id):

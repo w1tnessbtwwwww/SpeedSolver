@@ -19,13 +19,17 @@ project_router = APIRouter(
 async def create_project(team_id: UUID, project_data: CreateProject, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     return await ProjectService(session).create_project(user.id, team_id, project_data)
 
+@project_router.post("/invites/invite", summary="Пригласить пользователя в проект")
+async def invite_to_project(project_id: UUID, user_id: UUID, moderator: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    return await ProjectService(session).invite_user(project_id, user_id, moderator.id)
+
 @project_router.post("/invites/accept/{invite_request_id}", summary="Принять приглашение в проект")
 async def join_project(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    pass
+    return await ProjectService(session).accept_invite(invite_request_id, user.id)
 
 @project_router.delete("/invites/decline/{invite_request_id}", summary="Принять приглашение в команду")
 async def decline_invite(invite_request_id: UUID, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
-    pass
+    return await ProjectService(session).decline_invite(invite_request_id, user.id)
 
 @project_router.get("/{team_id}/get_all")
 async def get_all_team_projects(team_id: str, user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):

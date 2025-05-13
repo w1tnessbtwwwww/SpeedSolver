@@ -1,4 +1,5 @@
 import os
+from typing import List
 import uuid
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
@@ -6,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import glob
 
 from app.database.models.models import User
+from app.schema.response.project.read_project_invitation import ReadProjectInvitation
 from app.schema.response.user.read_user import ReadUser
 from app.schema.response.user.read_user_profile import ReadUserProfile
 from app.security.jwtmanager import get_current_user, oauth2_scheme
@@ -27,6 +29,10 @@ account_router = APIRouter(
 # @account_router.get("/my_organizations/get_all")
 # async def get_my_organizations(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
 #    return await OrganizationService(session).get_all_user_organizations(user.id)
+
+@account_router.get("/projects/invites/get_all", summary="Получить все приглашения в проекты", response_model=List[ReadProjectInvitation])
+async def get_project_invitations(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
+    return await UserService(session).get_all_project_invites(user.id)
 
 @account_router.get("/teams/get_all", summary="Получить все команды где админ или участник")
 async def get_my_teams(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
