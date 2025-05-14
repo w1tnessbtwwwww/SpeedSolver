@@ -61,7 +61,7 @@ class VerificationRepository(AbstractRepository):
             result = await self._session.execute(query)
             verification = result.scalars().first()
 
-            if datetime.datetime.now() > verification.created_at + datetime.timedelta(minutes=15):
+            if datetime.datetime.now(tz=datetime.timezone.utc) > verification.created_at + datetime.timedelta(minutes=15):
                 return err("Время верификации истекло. Запросите верификацию повторно.")
 
             if code == verification.verification_code:
