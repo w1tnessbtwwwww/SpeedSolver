@@ -96,7 +96,7 @@ const TeamPage = () => {
     description: '',
     deadline_date: '',
   });
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [_, setSelectedProjectId] = useState<string | null>(null);
   const [projectTasks, setProjectTasks] = useState<Task[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
@@ -284,7 +284,7 @@ const TeamPage = () => {
               <div>
                 <Button
                   onClick={() => setIsDialogOpen(true)}
-                  className="bg-transparent hover:bg-[#8f297a]"
+                  className="bg-tra hover:bg-[#8f297a]"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Создать
