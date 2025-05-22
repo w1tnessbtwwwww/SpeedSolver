@@ -13,3 +13,7 @@ kill:
 migration:
 	poetry run alembic revision --autogenerate
 	poetry run alembic upgrade head
+
+restart:
+	make kill
+	make dev
