@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database.models.models import Organization, Project, ProjectInvitation, Team, TeamMember, User, UserProfile
 
+from app.database.repo.user_profile_repository import UserProfileRepository
 from app.database.repo.user_repository import UserRepository
 
 from app.schema.request.get_access import authorize, register
@@ -88,6 +89,7 @@ class UserService:
     async def register(self, register_request: register.RegisterRequest) -> Result[None]:
        try:
             inserted = await self._repo.create(email=register_request.email, password=hash_password(register_request.password))
+            profile = await UserProfileRepository(self._session).update_profile(**register_request.profile.model_dump(), userId=inserted.id)
             is_verification_inserted = await VerificationService(self._session).process_verification(inserted.id, inserted.email)
             if not is_verification_inserted.success:
                 await self._repo.rollback()

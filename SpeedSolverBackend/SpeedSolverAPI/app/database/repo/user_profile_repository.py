@@ -22,6 +22,7 @@ class UserProfileRepository(AbstractRepository):
                              surname: Optional[str],
                              name: Optional[str],
                              patronymic: Optional[str],
+                             about: Optional[str],
                              birthdate: Optional[datetime]
                              ) -> Result[None]:
         
