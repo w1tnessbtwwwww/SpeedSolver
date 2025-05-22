@@ -3,13 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { get_team_by_id } from '@/app/axios_api';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { Undo2, Plus } from 'lucide-react';
+import { Undo2, Plus, UserPlus } from 'lucide-react';
 import ProjectCard from './components/ProjectCard';
 import MemberCard from './components/MemberCard';
 import TaskList from './components/TaskList';
 import CreateProjectDialog from './components/CreateProjectDialog';
 import CreateSubtaskDialog from './components/CreateSubtaskDialog';
 import Card from '@/components/card/Card';
+import InviteUserDialog from './components/InviteUserDialog';
 
 interface UserProfile {
   surname: string;
@@ -87,6 +88,7 @@ const TeamPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [newProject, setNewProject] = useState({
     title: '',
     description: '',
@@ -311,7 +313,19 @@ const TeamPage = () => {
         </div>
 
         <div className="w-80">
-          <MemberCard members={team.members} />
+          <Card>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-white text-lg font-semibold">Участники команды</h2>
+              <Button
+                onClick={() => setIsInviteDialogOpen(true)}
+                className="bg-tra hover:bg-[#8f297a]"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Пригласить
+              </Button>
+            </div>
+            <MemberCard members={team.members} />
+          </Card>
         </div>
       </div>
 
@@ -347,6 +361,12 @@ const TeamPage = () => {
           setIsSubtaskDialogOpen={setIsSubtaskDialogOpen}
           handleCreateSubtask={handleCreateSubtask}
           selectedTaskId={selectedTaskId}
+        />
+      )}
+      {isInviteDialogOpen && (
+        <InviteUserDialog
+          setIsInviteDialogOpen={setIsInviteDialogOpen}
+          teamId={team.id}
         />
       )}
     </div>

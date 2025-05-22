@@ -72,7 +72,7 @@ const AddTeamForm = ({ onClose, onSuccess }: AddTeamFormProps) => {
                 <FormItem>
                   <FormLabel className="text-white">Название</FormLabel>
                   <FormControl>
-                    <Input className="text-white" placeholder="DreamTeam" {...field} />
+                    <Input className="text-white bg-black outline-none" placeholder="DreamTeam" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
