@@ -5,6 +5,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from fastapi import HTTPException
 from app.database.models.models import Organization, TeamMember
+from app.database.repo.organization_invitation_repository import OrganizationInvitationRepository
 from app.database.repo.organization_repository import OrganizationRepository
 from app.schema.request.organization.create_organization import CreateOrganization
 
@@ -13,6 +14,10 @@ class OrganizationService:
     def __init__(self, session):
         self.session = session
         self.repo = OrganizationRepository(session)
+        self.inv_repo = OrganizationInvitationRepository(session)
+
+    async def invite_user(self, user_id: UUID, organization_id: UUID):
+        ...
 
     async def is_user_organization_leader(self, user_id: UUID, organization_id: UUID):
         query = (
@@ -32,7 +37,7 @@ class OrganizationService:
     async def get_all_user_organizations(self, user_id: UUID):
         query = (
             select(self.repo.model)
-            .join_from(TeamMember, Organization, TeamMember.userId == user_id)
+            .join
         )
         exec = await self.session.execute(query)
         result = exec.scalars().all()

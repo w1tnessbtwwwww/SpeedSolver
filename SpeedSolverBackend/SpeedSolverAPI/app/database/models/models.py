@@ -48,6 +48,26 @@ class Organization(Base):
     teams: Mapped[List["Team"]] = relationship("Team", back_populates="organization") # type: ignore
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
 
+class OrganizationMembers(Base):
+    __tablename__ = "organization_members"
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    userId: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    organizationId: Mapped[UUID] = mapped_column(ForeignKey("organizations.id"))
+
+    join_date: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
+
+class OrganizationInvitation(Base):
+    __tablename__ = "organization_invitations"
+    id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
+    organizationId: Mapped[UUID] = mapped_column(ForeignKey("organizations.id"))
+    invited_user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    invited_by_leader_id: Mapped[UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), default=func.now())
+
+    invited_user: Mapped["User"] = relationship("User", foreign_keys=[invited_user_id], back_populates="organization_invitations")
+    invited_by_leader: Mapped["User"] = relationship("User", foreign_keys=[invited_by_leader_id])
+    organization: Mapped["Organization"] = relationship("Organization")
+
 class Project(Base):
     __tablename__ = "projects"
     id: Mapped[UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
@@ -193,6 +213,7 @@ class User(Base):
 
     team_invitations: Mapped[List["TeamInvitation"]] = relationship("TeamInvitation", back_populates="invited_user", foreign_keys="[TeamInvitation.invited_user_id]", cascade="all, delete-orphan")
     project_invitations: Mapped[List["ProjectInvitation"]] = relationship("ProjectInvitation", back_populates="invited_user", foreign_keys="[ProjectInvitation.invited_user_id]", cascade="all, delete-orphan")
+    organization_invitations: Mapped[List["OrganizationInvitation"]] = relationship("OrganizationInvitation", back_populates="invited_user", foreign_keys="[OrganizationInvitation.invited_user_id]", cascade="all, delete-orphan")
     profile: Mapped["UserProfile"] = relationship("UserProfile", back_populates="user") # type: ignore
     teams: Mapped[List["TeamMember"]] = relationship("TeamMember", back_populates="user", cascade="all, delete-orphan") # type: ignore
     projects: Mapped[List["ProjectMember"]] = relationship("ProjectMember", back_populates="user", cascade="all, delete-orphan")

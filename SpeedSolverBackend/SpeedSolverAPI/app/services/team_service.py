@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy import and_, select
 
-from app.database.models.models import Project, Team, TeamMember, TeamModerator, TeamProject, User
+from app.database.models.models import Project, ProjectMember, Team, TeamMember, TeamModerator, TeamProject, User
 from app.database.repo.team_invitation_repository import TeamInvitationRepository
 from app.database.repo.team_member_repository import TeamMemberRepository
 from app.database.repo.team_repository import TeamRepository
@@ -44,10 +44,22 @@ class TeamService:
                 detail="У вас нет прав на просмотр проектов команды."
             )
         
+        if await self.is_user_team_moderator(user_id, team_id):
+            query = (
+                select(Project)
+                .select_from(TeamProject)
+                .where(ProjectMember.userId == user_id)
+            )
+
+            exec = await self.session.execute(query)
+            return exec.scalars().all()
+
         query = (
             select(Project)
             .select_from(TeamProject)
+            .join(ProjectMember, ProjectMember.projectId == TeamProject.projectId)
             .where(TeamProject.teamId == team_id)
+            .where(ProjectMember.userId == user_id)
         )
 
         exec = await self.session.execute(query)
